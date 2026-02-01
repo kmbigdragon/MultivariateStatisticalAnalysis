@@ -1,0 +1,119 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 2: Phân phối chuẩn một chiều**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+---
+
+\textbf{Câu 1.} Tập dữ liệu \textbf{hills} trong thư viện MASS gồm thời gian kỷ lục của 35 cuộc đua trên
+các ngọn đồi ở Scottland vào năm 1984. Với mỗi cuộc đua trên từng ngọn đồi, bộ dữ liệu
+cung cấp độ dài đường đua (dặm), độ cao đạt được (feet) và thời gian chạy của người dành
+chiến thắng (phút).
+
+```{r p1}
+library(MASS)
+data <- hills
+data
+```
+
+\
+\
+\
+(i) Tìm giá trị trung bình và độ lệch tiêu chuẩn của độ dài các đường đua, độ cao đạt
+được và thời gian chạy của người chiến thắng.
+
+```{r p1.1}
+# GTTB độ dài đường đua
+mean(data[, "dist"])
+# Độ lệch tiêu chuẩn độ dài đường đua
+sd(data[, "dist"])
+# GTTB độ cao đạt được
+mean(data[, "climb"])
+#  Độ lệch tiêu chuẩn độ cao đạt được
+sd(data[, "climb"])
+# GTTB thời gian chạy của người chiến thắng
+mean(data[, "time"])
+#  Độ lệch tiêu chuẩn thời gian chạy của người chiến thắng
+sd(data[, "time"])
+```
+
+\
+\
+\
+(ii) Các biến trong bộ dữ liệu có tuân theo phân phối chuẩn không?
+```{r p1.2}
+# Xây dựng hàm kiểm tra phân phối chuẩn bằng Shapiro-Wilk test
+check_shapiro_test <- function(x, alpha = 0.05) {
+  if (shapiro.test(x)$p.value < alpha) {
+    print("KHÔNG TUÂN THEO PHÂN PHỐI CHUẨN")
+  } else {
+    print("TUÂN THEO PHÂN PHỐI CHUẨN")
+  }
+}
+
+# Kiểm tra biến độ dài đường đua
+check_shapiro_test(data[, "dist"])
+
+# Kiểm tra biến độ cao đạt được
+check_shapiro_test(data[, "climb"])
+
+# Kiểm tra biến thời gian chạy của người chiến thắng
+check_shapiro_test(data[, "time"])
+```
+
+\
+\
+\
+(iii) Dùng hàm pairs để vẽ ma trận biểu đồ tán xạ cho bộ dữ liệu.
+
+```{r p1.3}
+pairs(data)
+```
+
+\
+\
+\
+\textbf{Câu 2.} Tập dữ liệu \textbf{iris} trong thư viện datasets gồm một số đặc điểm của các bông hoa
+diên vĩ. Với mỗi một bông hoa, bộ dữ liệu cung cấp độ dài, độ rộng của cánh hoa và đài hoa
+(cm) và loài.
+
+```{r p2}
+library(datasets)
+iris
+```
+
+\
+\
+(i) Tìm giá trị trung bình và độ lệch tiêu chuẩn của độ dài, độ rộng cánh hoa và đài hoa.
+```{r p2.1}
+# GTTB độ dài cánh hoa
+mean(iris$Petal.Length)
+# GTTB độ rộng cánh hoa
+mean(iris$Petal.Width)
+# GTTB độ dài đài hoa
+mean(iris$Sepal.Length)
+# GTTB độ rộng đài hoa
+mean(iris$Sepal.Width)
+# Độ lệch tiêu chuẩn độ dài cánh hoa
+sd(iris$Petal.Length)
+# Độ lệch tiêu chuẩn độ rộng cánh hoa
+sd(iris$Petal.Width)
+# Độ lệch tiêu chuẩn độ dài đài hoa
+sd(iris$Sepal.Length)
+# Độ lệch tiêu chuẩn độ rộng đài hoa
+sd(iris$Sepal.Width)
+```

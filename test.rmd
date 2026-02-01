@@ -1,0 +1,93 @@
+---
+title: "test"
+author: "Tran Minh"
+date: "2026-01-23"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+# 2. NHẬP FILE CSV
+### header = TRUE: Dòng đầu tiên sẽ là tên biến, các quan sát được tính từ dòng thứ 2
+```{r}
+test <- read.csv("D://WORKSPACE//R//MultivariateStatisticalAnalysis//test.csv", header=TRUE)
+test
+```
+
+# 3. VECTOR, MA TRẬN
+## 3.1. Vector
+```{r}
+x <- c(1, 2, 3, 4, 5)
+x
+```
+
+## 3.2. Ma trận
+```{r (abc)}
+P <- matrix(c(1, 2, 3, 4, 3, 1, 2, 3, 4), 3)
+colnames(P) <- c("X", "Y", "Z")
+rownames(P) <- c("A", "B", "C")
+P
+P[1, 2] # Lấy ra phần tử ở hàng 1, cột 2
+P[, 1] # Lấy ra tất cả các phần tử ở cột 1
+P[2, ] # Lấy ra tất cả các phần tử ở hàng 2
+P[-2, ] # Lấy ra các phần tử trừ các phần tử ở hàng 2
+P[-2, 3] # Lấy ra các phần tử ở hàng 1, 3 và cột 3
+P[-c(1, 2), 3] # Lấy ra phần tử ở cột 3, trừ các phần tử ở hàng 1, 2
+t(P) # Ma trận chuyển vị
+solve(P) # Ma trận nghịch đảo
+det(P) # Định thức
+eigen(P) # Giá trị riêng & Vector riêng
+eigen(P)$values # Giá trị riêng
+eigen(P)$vectors # Vector riêng là vector cột
+
+isSymmetric(P) # Kiểm tra tính đối xứng
+
+# install.packages("matrixcalc")
+library(matrixcalc)
+# is.positive.definite(P) # Kiểm tra tính xác định dương của một ma trận đối xứng
+
+T <- matrix(c(1, 2, 2, 1), 2)
+isSymmetric(T) # --> Đối xứng
+is.positive.definite(T) # --> Không XĐ dương
+
+library(lsbclust)
+?rorth
+O <- rorth(3, 3, 3) # Tạo ma trận trực giao ngẫu nhiên, lần lượt là 3 hàng, 3 cột, độ lệch chuẩn là 3
+all.equal(t(O), solve(O)) # TRUE: O là ma trận trực giao
+all.equal(t(P), solve(P)) # Kiểm tra tính trực giao của ma trận
+
+Q <- matrix(c(3, 4, 3, 2, 1, 2, 3, 4, 6), 3)
+P + Q # Cộng 2 ma trận
+P - Q # Trừ 2 ma trận
+P %*% Q # Nhân 2 ma trận
+P * Q # P_{ij} * Q_{ij}
+```
+
+```{r}
+install.packages(
+  "https://cran.r-project.org/src/contrib/Archive/lsbclust/lsbclust_1.0.tar.gz",
+  repos = NULL,
+  type = "source"
+)
+```
+
+```{r}
+# install.packages
+library(ISLR)
+df <- Carseats
+A <- matrix(
+  as.matrix(df[c(13, 47, 197, 136),
+               c("Sales", "CompPrice", "Income", "Advertising")]),
+  nrow = 4
+)
+B <- matrix(
+  as.matrix(df[c(13, 47, 97, 116),
+               c("Sales", "CompPrice", "Income", "Advertising")]),
+  nrow = 4
+)
+df[c(13, 47, 97, 116), c("Sales", "CompPrice", "Income", "Advertising")]
+B
+B %*% solve(A)
+
+```
