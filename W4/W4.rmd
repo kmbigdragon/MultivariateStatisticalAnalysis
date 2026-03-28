@@ -1,0 +1,193 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 4: Vector ngẫu nhiên - Mẫu ngẫu nhiên nhiều chiều**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+---
+
+\textbf{Câu 1. } Sinh 500 quan sát từ phân bố chuẩn nhiều chiều với:
+
+(i) Vector kỳ vọng $\mu = (3, 5)^T$
+
+(ii) Ma trận hiệp phương sai $\sum = \begin{pmatrix}
+2 & 0.5\\
+0.5 & 1
+\end{pmatrix}$
+
+Mô phỏng dữ liệu vừa sinh bằng biểu đồ tán xạ (scatterplot) và biểu đồ tần số / tần suất (histogram)
+với gói lệnh \textbf{ggplot2}. Sau đó tính toán và giải thích hiệp phương sai và tương quan.
+
+```{r p1}
+library(MASS)
+library(showtext)
+library(ggplot2)
+
+font_add("LM", "C:/Windows/Fonts/cambria.ttc")
+showtext_auto()
+set.seed(100)
+
+mu <- c(3, 5)
+
+sigma <- matrix(c(2, 0.5, 0.5, 1), nrow = 2)
+
+n <- 500
+
+samples <- mvrnorm(n = n, mu = mu, Sigma = sigma)
+
+samples_df <- as.data.frame(samples)
+colnames(samples_df) <- c("X1", "X2")
+
+samples_df
+
+ggplot(samples_df, aes(x = X1, y = X2)) +
+  geom_point(alpha = 0.6) +
+  theme_minimal(base_family = "LM") +
+  labs(title = "Biểu đồ tán xạ của dữ liệu được sinh", x = "X1", y = "X2")
+
+ggplot(samples_df, aes(x = X1)) +
+  geom_histogram(aes(y = after_stat(density)),
+    bins = 30,
+    fill = "skyblue",
+    color = "black"
+  ) +
+  stat_function(
+    fun = dnorm,
+    args = list(
+      mean = mean(samples_df$X1),
+      sd = sd(samples_df$X1)
+    ),
+    color = "red",
+    linewidth = 1.2
+  ) +
+  theme_minimal(base_family = "LM") +
+  labs(title = "Histogram của X1")
+
+ggplot(samples_df, aes(x = X2)) +
+  geom_histogram(aes(y = after_stat(density)),
+    bins = 30,
+    fill = "orange",
+    color = "black"
+  ) +
+  stat_function(
+    fun = dnorm,
+    args = list(
+      mean = mean(samples_df$X2),
+      sd = sd(samples_df$X2)
+    ),
+    color = "red",
+    linewidth = 1.2
+  ) +
+  theme_minimal(base_family = "LM") +
+  labs(title = "Histogram của X2")
+```
+
+$\bullet$ Hiệp phương sai $cov(X_1, X_2) = 0.5$ (Giá trị trên đường chéo phụ).
+
+\Rightarrow Hiệp phương sai dương nên hai biến biến thiên cùng chiều.
+
+$\bullet$ Hệ số tương quan: $\rho = \frac{cov(X_1, X_2)}{\sqrt{DX_1 \cdot DX_2}} = \frac{0.5}{\sqrt{2 \cdot 1}} = \frac{1}{2\sqrt{2}} \approx 0.35$.
+
+\Rightarrow Hệ số tương quan $\approx 0.35$ nên $X_1$ và $X_2$ tương quan không mạnh.
+
+\textbf{Câu 2. } Sử dụng câu lệnh \textit{set.seed(100)} và sinh mẫu ngẫu nhiên
+gồm 100 quan sát tuân theo phân phối chuẩn 3 chiều với giá trị trung bình $(0, 0, 1)^T$
+và ma trận hiệp phương sai
+\[\begin{pmatrix}
+1 & .8 & .6 \\
+.8 & 1 & .8 \\
+.6 & .8 & 1
+\end{pmatrix}\]
+
+(1) Đặt tên các biến lần lượt là A, B, C. Thêm một biến D vào mẫu trên, D gồm 100
+quan sát được sinh ngẫu nhiên biết nó tuân theo phân phối chuẩn với hai tham số 0.5 và 0.5.
+
+```{r p1.1}
+library(MASS)
+
+set.seed(100)
+
+n <- 100
+
+mu <- c(0, 0, 1)
+
+sigma <- matrix(
+  c(
+    1, 0.8, 0.6,
+    0.8, 1, 0.8,
+    0.6, 0.8, 1
+  ),
+  byrow = TRUE, nrow = 3
+)
+
+samples <- mvrnorm(n = n, mu = mu, Sigma = sigma)
+
+samples_df <- as.data.frame(samples)
+colnames(samples_df) <- c("A", "B", "C")
+
+samples_df$D <- rnorm(n = n, mean = 0.5, sd = sqrt(0.5))
+
+samples_df
+```
+
+(2) Tính giá trị trung bình mẫu, ma trận tương quan mẫu và ma trận hiệp phương sai Mẫu
+```{r p1.2}
+# Giá trị trung bình mẫu
+samples_mean <- colMeans(samples_df)
+samples_mean
+
+# Ma trận tương quan mẫu
+samples_cor <- cor(samples_df)
+samples_cor
+
+# Ma trận hiệp phương sai mẫu
+samples_cov <- cov(samples_df)
+samples_cov
+```
+
+(3) Vẽ biểu đồ phân tán của các biến và biểu đồ nhiệt của ma trận tương quan mẫu.
+
+```{r p1.3}
+library(ggplot2)
+library(showtext)
+
+font_add("LM", "C:/Windows/Fonts/cambria.ttc")
+showtext_auto()
+
+pairs(samples_df,
+  main = "Biểu đồ phân tán của các biến A, B, C, D",
+  pch = 19,
+  col = "blue"
+)
+
+cor_mat <- as.data.frame(as.table(samples_cor))
+colnames(cor_mat) <- c("Z1", "Z2", "Correlation")
+
+ggplot(cor_mat, aes(x = Z1, y = Z2, fill = Correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(Correlation, 4)), color = "black") +
+  scale_y_discrete(limits = rev(levels(cor_mat$Z2))) +
+  scale_fill_gradient2(
+    low = "blue",
+    mid = "white",
+    high = "red",
+    midpoint = 0,
+    limits = c(-1, 1),
+    name = "Hệ số tương quan"
+  ) +
+  theme_minimal(base_family = "LM") +
+  labs(title = "Biểu đồ nhiệt của ma trận tương quan mẫu")
+```

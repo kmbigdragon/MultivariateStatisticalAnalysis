@@ -1,0 +1,270 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 3: Khoảng tin cậy - Bài toán kiểm định - Hồi quy tuyến tính đơn**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+---
+
+\textbf{Câu 1.} Người ta đo chiều cao của trẻ mới được sinh ra trong một tuần tại một nhà
+hộ sinh cho kết quả dưới đây (đơn vị là cm)
+
+\begin{center}
+49 50 45 51 47 49 48 54 53 55 45 50 48
+\end{center}
+
+\hspace{1.35cm}{Giả thiết rằng chiều cao của trẻ khi mới sinh có phân bố chuẩn. Với mức ý nghĩa 5\%,
+hãy kiểm định xem chiều cao trung bình của trẻ mới sinh khác 50 cm không?}
+$$H_0: \mu = 50$$
+$$H_1: \mu \neq 50$$
+
+```{r p1}
+children_heights <- c(49, 50, 45, 51, 47, 49, 48, 54, 53, 55, 45, 50, 48)
+result <- t.test(
+  x = children_heights,
+  mu = 50,
+  alternative = "two.sided",
+  conf.level = 0.95
+)
+print(result)
+
+if (result$p.value < 0.05) {
+  print(paste("Bác bỏ H0"))
+} else {
+  print(paste("Chưa đủ điều kiện để bác bỏ H0"))
+}
+```
+
+\
+\textbf{Câu 2.} Một tay đua xe đạp nói rằng mỗi ngày trung bình anh ta đạp xe ít nhất 5 dặm
+(trong rất nhiều năm). Chọn ngẫu nhiên 8 ngày trong sổ tay anh ta thì thấy các số liệu ghi
+quãng đường anh ta đi như sau:
+
+\begin{center}
+5.3 4.5 4.8 5.1 4.3 4.8 4.9 4.7
+\end{center}
+
+\hspace{1.4cm}{Với mức ý nghĩa 5\% có thể cho rằng anh ta nói đúng sự thật hay không?}
+$$H_0: \mu \geq 5 \quad \text{(anh ta nói đúng)}$$
+$$H_1: \mu < 5 \quad \text{(anh ta nói sai)}$$
+
+```{r p2}
+cycling_stats <- c(5.3, 4.5, 4.8, 5.1, 4.3, 4.8, 4.9, 4.7)
+result <- t.test(
+  x = cycling_stats,
+  mu = 5,
+  alternative = "less",
+  conf.level = 0.95
+)
+print(result)
+
+if (result$p.value < 0.05) {
+  print(paste("Bác bỏ H0, anh ta nói không đúng sự thật"))
+} else {
+  print(paste("Chưa đủ điều kiện để bác bỏ H0, anh ta nói đúng sự thật"))
+}
+```
+
+\
+\textbf{Câu 3.} Trong 200 sinh viên có 68 sinh viên cao trên 170cm. Kiểm định xem tỷ lệ sinh viên
+cao trên 170cm có thực sự khác 40% hay không?
+$$H_0: p = 0.4$$
+$$H_1: p \neq 0.4$$
+
+```{r p3}
+result <- prop.test(
+  x = 68,
+  n = 200,
+  p = 0.4,
+  alternative = "two.sided",
+  conf.level = 0.95
+)
+print(result)
+
+if (result$p.value < 0.05) {
+  print(paste("Bác bỏ H0"))
+} else {
+  print(paste("Chưa đủ điều kiện để bác bỏ H0"))
+}
+```
+
+\
+\textbf{Câu 4.} Sử dụng bộ dữ liệu "cars" trong R, hãy:
+
+(i) Với mức ý nghĩa 10%, kiểm định xem giá trị trung bình của khoảng cách dùng - "dist"
+lớn hơn 45 không? Giải thích các kết quả thu được.
+$$H_0: \mu = 45$$
+$$H_1: \mu > 45$$
+```{r p4.1}
+result <- t.test(
+  x = cars$dist,
+  mu = 45,
+  alternative = "greater",
+  conf.level = 0.9
+)
+result
+
+if (result$p.value < 0.05) {
+  print(paste("Bác bỏ H0"))
+  print(paste("Có thể kết luận giá trị trung bình của khoảng cách dừng lớn hơn 45"))
+} else {
+  print(paste("Chưa đủ điều kiện để bác bỏ H0"))
+  print(paste("Chưa thể kết luận giá trị trung bình của khoảng cách dừng lớn hơn 45"))
+}
+```
+
+\
+(ii) Với mức ý nghĩa 2%, kiểm định xem tỷ lệ số xe có tốc độ - "speed" nhỏ hơn 13 trên
+tổng số xe có lớn hơn 0.4 không? Giải thích các kết quả thu được.
+$$H_0: p = 0.4$$
+$$H_1: p > 0.4$$
+```{r p4.2}
+result <- prop.test(
+  x = nrow(subset(cars, speed < 13)),
+  n = nrow(cars),
+  p = 0.4,
+  alternative = "greater",
+  conf.level = 0.98
+)
+result
+
+if (result$p.value < 0.05) {
+  print(paste("Bác bỏ H0"))
+  print(paste("Có thể kết luận tỷ lệ số xe có tốc độ nhỏ hơn 13 trên tổng số xe lớn hơn 0.4"))
+} else {
+  print(paste("Chưa đủ điều kiện để bác bỏ H0"))
+  print(paste("Chưa thể kết luận tỷ lệ số xe có tốc độ nhỏ hơn 13 trên tổng số xe lớn hơn 0.4"))
+}
+```
+
+\
+\
+\textbf{Câu 5.} Người ta ghi lại sản lượng lúa mì, tính bằng tạ/ha của các mảnh ruộng đã bón lót
+50 và 100 đơn vị đạm trên một hécta.
+
+Bón 50 đơn vị: 47.2 43.1 35.7 47.0 45.7 42.6 46.7 42.3
+
+Bón 100 đơn vị: 47.9 48.9 43.5 53.1 50.8 46.1 41.1 43.0 41.0 48.5 47.7
+
+Với mức ý nghĩa 5% có thể kết luận rằng bón lót 100 đơn vị đạm cho năng suất cao hơn bón
+lót 50 đơn vị đạm hay không?
+$$H_0: \mu_{50} \geq \mu_{100}$$
+$$H_1: \mu_{50} < \mu_{100}$$
+```{r p5}
+bon50 <- c(47.2, 43.1, 35.7, 47.0, 45.7, 42.6, 46.7, 42.3)
+bon100 <- c(47.9, 48.9, 43.5, 53.1, 50.8, 46.1, 41.1, 43.0, 41.0, 48.5, 47.7)
+
+var_test <- var.test(
+  x = bon50,
+  y = bon100,
+  conf.level = 0.95
+)
+print(var_test)
+
+result <- t.test(
+  x = bon50,
+  y = bon100,
+  alternative = "less",
+  var.equal = var_test$p.value > 0.05,
+  conf.level  = 0.95
+)
+print(result)
+
+if (result$p.value < 0.05) {
+  print("Bác bỏ H0")
+  print("Có thể kết luận bón lót 100 đơn vị đạm cho năng suất cao hơn bón lót 50 đơn vị đạm")
+} else {
+  print("Chưa đủ điều kiện để bác bỏ H0")
+  print("Chưa thể kết luận bón lót 100 đơn vị đạm cho năng suất cao hơn bón lót 50 đơn vị đạm")
+}
+```
+
+\
+\textbf{Câu 6.} Người quản lí một nhà hàng muốn so sánh số khách trung bình mà hai tiếp viên A
+và B phục vụ của nhà hàng phục vụ trong mỗi ngày. Anh ta thu được các số liệu thống kê
+sau đây:
+
+Tiếp viên A: 42 36 58 27 48 85 38 44 62
+
+Tiếp viên B: 53 48 65 41 57 49 74 49 56
+
+Với mức ý nghĩa 5%, có thể kết luận rằng lượng khách trung bình mà hai tiếp viên A và B
+phục vụ có khác nhau hay không?
+$$H_0: \mu_{A} = \mu_{B}$$
+$$H_1: \mu_{A} \neq \mu_{B}$$
+```{r p6}
+tv_a <- c(42, 36, 58, 27, 48, 85, 38, 44, 62)
+tv_b <- c(53, 48, 65, 41, 57, 49, 74, 49, 56)
+
+var_test <- var.test(
+  x = tv_a,
+  y = tv_b,
+  conf.level = 0.95
+)
+print(var_test)
+
+result <- t.test(
+  x = tv_a,
+  y = tv_b,
+  var.equal = var_test$p.value > 0.05,
+  alternative = "two.sided",
+  conf.level = 0.95
+)
+print(result)
+
+if (result$p.value < 0.05) {
+  print("Bác bỏ H0")
+  print("Có thể kết luận lượng khách trung bình mà hai tiếp viên A và B phục vụ có khác nhau")
+} else {
+  print("Chưa đủ điều kiện để bác bỏ H0")
+  print("Chưa thể kết luận lượng khách trung bình mà hai tiếp viên A và B phục vụ có khác nhau")
+}
+```
+
+\
+\textbf{Câu 7.} Sử dụng bộ dữ liệu “iris” trong R.
+
+(i) Tìm hệ số tương quan mẫu giữa Sepal.Length và Sepal.Width; Petal.Length và Petal.Width.
+```{r p7.1}
+cor_sepal <- cor(iris$Sepal.Length, iris$Sepal.Width)
+cat("Hệ số tương quan giữa Sepal.Length & Sepal.Width:", round(cor_sepal, 4), "\n")
+
+cor_petal <- cor(iris$Petal.Length, iris$Petal.Width)
+cat("Hệ số tương quan giữa Petal.Length & Petal.Width:", round(cor_petal, 4), "\n")
+```
+
+\
+(ii) Kiểm định sự tương quan giữa Sepal.Length và Sepal.Width; Petal.Length và Petal.Width.
+```{r p7.2}
+cor_test_sepal <- cor.test(iris$Sepal.Length, iris$Sepal.Width)
+print(cor_test_sepal)
+
+cor_test_petal <- cor.test(iris$Petal.Length, iris$Petal.Width)
+print(cor_test_petal)
+```
+
+\
+(iii) Mô hình hồi quy tuyến tính Sepal.Width theo Petal.Width.
+```{r p7.3}
+model <- lm(Sepal.Width ~ Petal.Width, data = iris)
+summary(model)
+
+shapiro_test <- shapiro.test(model$residuals)
+print(shapiro_test)
+
+t_test_resid <- t.test(model$residuals, mu = 0)
+print(t_test_resid)
+```

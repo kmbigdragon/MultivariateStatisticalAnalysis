@@ -1,0 +1,151 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 8: Hồi quy tuyến tính đơn**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+\
+\textbf{Câu 1:} Sử dụng bộ dữ liệu \textbf{iris} trong R.
+
+1. Tìm hệ số tương quan mẫu giữa \textit{Sepal.Length} và \textit{Sepal.Width}; \textit{Petal.Length} và \textit{Petal.Width}.
+
+```{r p1.1}
+data(iris)
+head(iris)
+
+# Hệ số tương quan mẫu giữa Sepal.Length và Sepal.width
+cor_sepal <- cor(iris$Sepal.Length, iris$Sepal.Width)
+cor_sepal
+
+# Hệ số tương quan mẫu giữa Petal.Length và Petal.width
+cor_petal <- cor(iris$Petal.Length, iris$Petal.Width)
+cor_petal
+```
+
+2. Kiểm định sự tương quan giữa \textit{Sepal.Length} và \textit{Sepal.Width}; \textit{Petal.Length} và \textit{Petal.Width}.
+
+```{r p1.2}
+# Kiểm định sự tương quan giữa Sepal.Length và Sepal.width
+sepal_cor_test <- cor.test(iris$Sepal.Length, iris$Sepal.Width)
+sepal_cor_test
+if (sepal_cor_test$p.value < 0.05) {
+  print("Bác bỏ H0, có sự tương quan giữa Sepal.Length và Sepal.Width")
+} else {
+  print("Chưa đủ cơ sở để kết luận có sự tương quan")
+}
+
+# Kiểm định sự tương quan giữa Petal.Length và Petal.width
+petal_cor_test <- cor.test(iris$Petal.Length, iris$Petal.Width)
+petal_cor_test
+if (petal_cor_test$p.value < 0.05) {
+  print("Bác bỏ H0, có sự tương quan giữa Petal.Length và Petal.Width")
+} else {
+  print("Chưa đủ cơ sở để kết luận có sự tương quan")
+}
+```
+
+3. Viết mô hình hồi quy tuyến tính của \textit{Sepal.Width} theo \textit{Petal.Width}. Các hệ số trong
+mô hình hồi quy có thực sự khác 0 không? Phần dư trong mô hình có tuân theo phân
+phối chuẩn với giá trị trung bình bằng 0 không?
+
+```{r p1.3}
+linear_model <- lm(Sepal.Width ~ Petal.Width, data = iris)
+linear_model
+
+s <- summary(linear_model)
+s
+
+if (s$coefficients[1, 4] < 0.05 && s$coefficients[2, 4] < 0.05) {
+  print("Có thể kết luận các hệ số của mô hình khác 0")
+} else {
+  print("Có thể kết luận các hệ số của mô hình bằng 0")
+}
+
+e <- residuals(linear_model)
+
+st <- shapiro.test(e)
+st
+
+if (st$p.value < 0.05) {
+  print("Có thể kết luận phần dư không tuân theo phân phối chuẩn")
+} else {
+  print("Có thể kết luận phần dư tuân theo phân phối chuẩn")
+  tt <- t.test(e)
+  print(tt)
+  if (tt$p.value < 0.05) {
+    print("Giá trị trung bình phần dư khác 0")
+  } else {
+    print("Giá trị trung bình phần dư bằng 0")
+  }
+}
+```
+
+\textbf{Câu 2:} Thực hiện các yêu cầu với bộ dữ liệu \textbf{cars} trong R gồm 50 quan sát về \textit{dist (khoảng
+cách dừng (ft))} và speed \textit{(tốc độ (mph))} trong gói lệnh datasets.
+
+1. Sử dụng câu lệnh \textit{set.seed(3)} và chia bộ dữ liệu cars thành hai bộ dữ liệu con: \textit{training
+(65%)} và \textit{testing (35%)}.
+
+```{r p2.1}
+set.seed(3)
+
+train_index <- sample(1:nrow(cars), size = 0.65 * nrow(cars)) # nolint
+
+training <- cars[train_index, ]
+training
+
+testing <- cars[-train_index, ]
+testing
+```
+
+\
+2. Phân tích hồi quy tuyến tính của biến \textit{dist} theo \textit{speed} trên bộ dữ liệu \textit{training}.
+
+```{r p2.2}
+lmfit <- lm(dist ~ speed, data = training)
+lmfit
+
+plot(training$speed, training$dist,
+     xlab = "Speed (mph)",
+     ylab = "Distance (ft)",
+     main = "Linear Regression on Training Data")
+abline(lmfit, col = "red")
+```
+
+\
+3. Đánh giá trên bộ dữ liệu \textit{testing}.
+
+```{r p2.3}
+y_pred <- predict(lmfit, newdata = testing)
+y_true <- testing$dist
+
+n <- length(y_true)
+
+for (i in 1:n) {
+  print(paste0("Predicted: ", round(y_pred[i], 2),
+               " | True: ", y_true[i]))
+}
+
+tss <- sum((y_true - mean(y_true))^2)
+rss <- sum((y_true - y_pred)^2)
+r2 <- 1 - rss / tss
+tss
+rss
+r2
+
+rmse <- sqrt(mean((y_true - y_pred)^2))
+rmse
+```

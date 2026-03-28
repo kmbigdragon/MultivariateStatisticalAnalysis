@@ -1,0 +1,219 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 6: Phương pháp làm giảm số chiều dữ liệu**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+---
+
+\textbf{Câu 1. } Tập dữ liệu \textbf{USJudgeRatings {datasets}} trong R gồm 12 chỉ số đánh giá
+cho 43 thẩm phán. Sử dụng dữ liệu trên, hãy cho biết:
+
+\
+(1) Thực hiện phân tích thành phần chính trên tập dữ liệu, hãy cho biết nếu dùng 5 thành phần chính
+đầu thì tỉ lệ dữ liệu là bao nhiêu?
+```{r p1.1}
+library(datasets)
+
+df <- USJudgeRatings
+head(df)
+
+# Phân tích thành phần chính
+pca <- princomp(df)
+summary(pca)
+
+# Nếu dùng 5 thành phần chính
+sum(pca$sdev[1:5]^2) / sum(pca$sdev^2)
+```
+
+\
+(2) Gọi 5 thành phần chính là $Y_1$ đến $Y_5$. Hãy cho biết biến "CONT" và "CFMG"
+đóng góp bao nhiêu trong mỗi thành phần trên.
+```{r p1.2}
+contribution <- loadings(pca)[c("CONT", "CFMG"), 1:5]
+colnames(contribution) <- c("Y1", "Y2", "Y3", "Y4", "Y5")
+contribution
+```
+
+\
+(3) Vẽ biểu đồ tỉ lệ các thành phần trong trường hợp phân tích trên tập dữ liệu
+và sử dụng ma trận tương quan.
+```{r p1.3}
+library(showtext)
+font_add("LM", "C:/Windows/Fonts/cambria.ttc")
+showtext_auto()
+
+pcacov <- princomp(df, cor = TRUE)
+summary(pcacov, cor = TRUE)
+
+prop_var1 <- pca$sdev^2 / sum(pca$sdev^2)
+plot(prop_var1,
+  col = "red",
+  cex = 2,
+  lwd = 2,
+  type = "b",
+  xlab = "Thành phần chính",
+  ylab = "Tỉ lệ",
+  main = "Tỉ lệ các thành phần (phân tích trên bộ dữ liệu)"
+)
+
+prop_var2 <- pcacov$sdev^2 / sum(pcacov$sdev^2)
+plot(prop_var2,
+  col = "red",
+  cex = 2,
+  lwd = 2,
+  type = "b",
+  xlab = "Thành phần chính",
+  ylab = "Tỉ lệ",
+  main = "Tỉ lệ các thành phần (dùng ma trận tương quan)"
+)
+```
+
+\
+(4) Vẽ biểu đồ hai thành phần trong trường hợp sử dụng ma trận tương quan.
+```{r p1.4}
+library(showtext)
+font_add("LM", "C:/Windows/Fonts/cambria.ttc")
+showtext_auto()
+
+pcacov <- princomp(df, cor = TRUE)
+
+biplot(pcacov,
+  col = c(2, 4),
+  cex = c(.5, 1.25),
+  xlab = "Thành phần chính thứ nhất",
+  ylab = "Thành phần chính thứ hai",
+  main = "Biểu đồ hai thành phần (sử dụng ma trận tương quan)"
+)
+```
+
+\
+(5) Tiến hành phân tích nhân tố cho bộ dữ liệu trên với 4 nhân tố. Hãy cho biết tỉ lệ tổng bình phương sai của 4 nhân tố.
+```{r p1.5}
+factanal(df, factors = 4)
+```
+
+\
+(6) Với nhiều nhân tố hơn, hãy cho biết cần bao nhiêu nhân tố để tỉ lệ tổng phương sai
+lớn hơn 99%. Khi đó hãy cho biết biến "CONT" và "CFMG" được viết thông qua các
+nhân tố $"F_i"$ như thế nào?
+```{r p1.6}
+fa7 <- factanal(df, factors = 7)
+fa7$loadings
+```
+
+\
+(7) Trong phân tích nhân tố nói trên, hãy cho biết 4 nhân tố đã đủ để giải thích bộ dữ
+liệu hay chưa, nếu chưa thì hãy cho biết cần bao nhiêu nhân tô? Xét ở mức ý nghĩa
+5% cho kiểm định đó.
+
+```{r p1.7}
+factanal(df, factors = 5)
+```
+
+\
+\textbf{Câu 2. } Bộ dữ liệu \textbf{wdbc {kdevine}} trong R được thu thập từ Bệnh viện Đại học Wisconsin,
+Madison, và được sử dụng để hỗ trợ trong việc chẩn đoán ung thư vú thông qua các đặc
+điểm của tế bào. Bộ dữ liệu gồm 569 quan sát và 31 biến, cụ thể các đặc trưng: Radius (Độ
+dài trung bình từ tâm đến các điểm trên chu vi), Texture (Độ lệch chuẩn của các giá trị
+xám), Perimeter (Chu vi của tế bào), Area (Diện tích của tế bào), Smoothness (Biến thiên
+cục bộ trong độ dài bán kính), Compactness (Tính toán từ chu vi và diện tích), Concavity
+(Mức độ nghiêm trọng của các phần lõm trên đường viền), Concave Points (Số lượng phần
+lõm trên đường viền), Symmetry (Độ đối xứng của tế bào), Fractal Dimension (Đánh giá độ
+phức tạp của hình dạng tế bào).
+
+\
+(1) Tiến hành tiền xử lý dữ liệu, bao gồm việc loại bỏ các cột không cần thiết và chuyển đổi
+các biến phân loại thành biến số.
+```{r p2.1}
+library(kdevine)
+
+df <- wdbc
+
+df$ID <- NULL
+
+df[, 1] <- as.numeric(df[, 1]) - 1
+
+head(df)
+```
+
+\
+(2) Chuẩn hóa dữ liệu để đảm bảo rằng tất cả các biến có cùng quy mô.
+```{r p2.2}
+df_scaled <- scale(df)
+
+apply(df_scaled, 2, mean)
+apply(df_scaled, 2, sd)
+```
+
+\
+(3) Tính toán ma trận hiệp phương sai và tìm giá trị riêng, vector riêng.
+```{r p2.3}
+cov_matrix <- cov(df_scaled)
+
+eigen_result <- eigen(cov_matrix)
+
+eigen_values <- eigen_result$values
+eigen_vectors <- eigen_result$vectors
+
+eigen_values
+```
+
+\
+(4) Thực hiện PCA và phân tích kết quả. Sau đó, vẽ các biểu đồ liên quan đến PCA, bao gồm
+biplot, biểu đồ tỷ lệ phương sai giải thích và biểu đồ phân tán các thành phần chính.
+```{r p2.4}
+pca <- princomp(df_scaled)
+
+summary(pca)
+
+var <- pca$sdev^2 / sum(pca$sdev^2)
+
+plot(var,
+  col = "red",
+  cex = 2,
+  lwd = 2,
+  type = "b",
+  xlab = "Thành phần chính",
+  ylab = "Tỉ lệ",
+  main = "Tỉ lệ các thành phần (phân tích trên bộ dữ liệu)"
+)
+
+biplot(pca,
+  col = c(2, 4),
+  cex = c(.5, 1.25),
+  xlab = "Thành phần chính thứ nhất",
+  ylab = "Thành phần chính thứ hai",
+  main = "Biểu đồ hai thành phần (sử dụng ma trận tương quan)"
+)
+```
+
+\
+(5) Viết nhận xét về kết quả phân tích và ý nghĩa của các thành phần chính.
+
+Thành phần chính thứ nhất giải thích khoảng 45% dữ liệu.
+
+Thành phần chính thứ hai giải thích khoảng 18% dữ liệu.
+
+Thành phần chính thứ ba giải thích khoảng 9% dữ liệu.
+
+...
+
+7 thành phần chính đầu tiên giải thích khoảng 90% dữ liệu.
+
+11 thành phần chính đầu tiên giải thích khoảng 95% dữ liệu.
+
+17 thành phần chính đầu tiên giải thích khoảng 99% dữ liệu.

@@ -1,0 +1,87 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 4: Vector ngẫu nhiên nhiều chiều, Mẫu ngẫu nhiên nhiều chiều**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+---
+
+Vector kì vọng: $\mu = (0.5, 1.0)^T$
+
+Ma trận hiệp phương sai: 
+$\sum = 
+\begin{pmatrix}
+1 & 0.5 \\
+0.5 & 1
+\end{pmatrix}$
+
+a. Sinh ngẫu nhiên 500 mẫu
+
+```{r p1a}
+library(MASS)
+# Vector kì vọng
+mu <- c(0.5, 1.0)
+# Ma trận hiệp phương sai
+sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+n <- 500
+set.seed(123)
+samples <- mvrnorm(n = n, mu = mu, Sigma = sigma)
+print(samples)
+```
+
+b. Với dữ liệu vừa sinh ra ta biểu diễn dưới dạng đồ thị tán xạ kết hợp cùng
+với các đường mặt mức. Để vẽ đồ thị ta sẽ sử dụng gói lệnh \textbf{ggplot2}.
+```{r p1b}
+library(ggplot2)
+library(showtext)
+font_add("LM", "C:/Windows/Fonts/cambria.ttc")
+showtext_auto()
+sample_df <- data.frame(Z1 = samples[, 1], Z2 = samples[, 2])
+ggplot(sample_df, aes(x = Z1, y = Z2)) +
+  geom_point(color = "blue", alpha = 0.6) +
+  stat_density_2d(
+    aes(fill = after_stat(level)),
+    geom = "polygon",
+    color = "orange",
+    bins = 15
+  ) +
+  scale_fill_gradient(low = "lightblue", high = "darkblue") +
+  labs(
+    title = "Đồ thị tán xạ cùng đường mặt mức",
+    x = "Z1",
+    y = "Z2"
+  ) +
+  theme_minimal(base_family = "LM")
+```
+
+Để sinh dữ liệu mô phỏng phân bố chuẩn nhiều chiều ta dùng thư viện \textbf{mvtnorm}
+
+```{r p1c}
+library(mvtnorm)
+set.seed(1)
+x <- rmvnorm(50, mean = c(0, 0), sigma = matrix(c(1, .8, .8, 1), nrow = 2))
+# Sinh ngẫu nhiên 50 quan sát có phân phối chuẩn nhiều chiều N(mean, sigma)
+head(x)
+colMeans(x) # Trung bình mẫu: là 1 vector 2 giá trị
+cov(x) # Ma trận hiệp phương sai mẫu: là ma trận vuông
+cor(x) # Ma trận tương quan mẫu: là ma trận vuông
+```
+
+Ngoài ra có thể sử dụng gói lệnh \textbf{mnormt}
+
+```{r p1d}
+library(mnormt)
+```

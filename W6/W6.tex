@@ -1,0 +1,713 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{titling}
+\setlength{\droptitle}{-1.5cm}
+\pretitle{\begin{center}\Large\bfseries}
+\posttitle{\end{center}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)},
+  pdfauthor={Bài tập tuần 6: Phương pháp làm giảm số chiều dữ liệu},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{\textbf{PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)}}
+\author{\textbf{Bài tập tuần 6: Phương pháp làm giảm số chiều dữ liệu}}
+\date{Trần Đăng Quang Minh - MSV: 23000141}
+
+\begin{document}
+\maketitle
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Câu 1. } Tập dữ liệu \textbf{USJudgeRatings {datasets}} trong R
+gồm 12 chỉ số đánh giá cho 43 thẩm phán. Sử dụng dữ liệu trên, hãy cho
+biết:
+
+\hfill\break
+(1) Thực hiện phân tích thành phần chính trên tập dữ liệu, hãy cho biết
+nếu dùng 5 thành phần chính đầu thì tỉ lệ dữ liệu là bao nhiêu?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(datasets)}
+
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ USJudgeRatings}
+\FunctionTok{head}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                CONT INTG DMNR DILG CFMG DECI PREP FAMI ORAL WRIT PHYS RTEN
+## AARONSON,L.H.   5.7  7.9  7.7  7.3  7.1  7.4  7.1  7.1  7.1  7.0  8.3  7.8
+## ALEXANDER,J.M.  6.8  8.9  8.8  8.5  7.8  8.1  8.0  8.0  7.8  7.9  8.5  8.7
+## ARMENTANO,A.J.  7.2  8.1  7.8  7.8  7.5  7.6  7.5  7.5  7.3  7.4  7.9  7.8
+## BERDON,R.I.     6.8  8.8  8.5  8.8  8.3  8.5  8.7  8.7  8.4  8.5  8.8  8.7
+## BRACKEN,J.J.    7.3  6.4  4.3  6.5  6.0  6.2  5.7  5.7  5.1  5.3  5.5  4.8
+## BURNS,E.B.      6.2  8.8  8.7  8.5  7.9  8.0  8.1  8.0  8.0  8.0  8.6  8.6
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Phân tích thành phần chính}
+\NormalTok{pca }\OtherTok{\textless{}{-}} \FunctionTok{princomp}\NormalTok{(df)}
+\FunctionTok{summary}\NormalTok{(pca)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Importance of components:
+##                           Comp.1     Comp.2     Comp.3     Comp.4      Comp.5
+## Standard deviation     2.9944812 0.97631616 0.54821237 0.46436892 0.260897305
+## Proportion of Variance 0.8476102 0.09010189 0.02840865 0.02038352 0.006434164
+## Cumulative Proportion  0.8476102 0.93771205 0.96612070 0.98650423 0.992938391
+##                             Comp.6      Comp.7      Comp.8       Comp.9
+## Standard deviation     0.172098999 0.127444176 0.107411902 0.0862216855
+## Proportion of Variance 0.002799688 0.001535299 0.001090581 0.0007027259
+## Cumulative Proportion  0.995738079 0.997273378 0.998363959 0.9990666848
+##                             Comp.10      Comp.11      Comp.12
+## Standard deviation     0.0703843063 0.0550575991 0.0434546479
+## Proportion of Variance 0.0004682789 0.0002865415 0.0001784947
+## Cumulative Proportion  0.9995349638 0.9998215053 1.0000000000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Nếu dùng 5 thành phần chính}
+\FunctionTok{sum}\NormalTok{(pca}\SpecialCharTok{$}\NormalTok{sdev[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{]}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(pca}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.9929384
+\end{verbatim}
+
+\hfill\break
+(2) Gọi 5 thành phần chính là \(Y_1\) đến \(Y_5\). Hãy cho biết biến
+``CONT'' và ``CFMG'' đóng góp bao nhiêu trong mỗi thành phần trên.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{contribution }\OtherTok{\textless{}{-}} \FunctionTok{loadings}\NormalTok{(pca)[}\FunctionTok{c}\NormalTok{(}\StringTok{"CONT"}\NormalTok{, }\StringTok{"CFMG"}\NormalTok{), }\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{]}
+\FunctionTok{colnames}\NormalTok{(contribution) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Y1"}\NormalTok{, }\StringTok{"Y2"}\NormalTok{, }\StringTok{"Y3"}\NormalTok{, }\StringTok{"Y4"}\NormalTok{, }\StringTok{"Y5"}\NormalTok{)}
+\NormalTok{contribution}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               Y1        Y2         Y3          Y4          Y5
+## CONT  0.00599117 0.9332488  0.3198540  0.11293271  0.09462326
+## CFMG -0.27201855 0.1631993 -0.1893545 -0.02481803 -0.47964024
+\end{verbatim}
+
+\hfill\break
+(3) Vẽ biểu đồ tỉ lệ các thành phần trong trường hợp phân tích trên tập
+dữ liệu và sử dụng ma trận tương quan.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(showtext)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: sysfonts
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: showtextdb
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{font\_add}\NormalTok{(}\StringTok{"LM"}\NormalTok{, }\StringTok{"C:/Windows/Fonts/cambria.ttc"}\NormalTok{)}
+\FunctionTok{showtext\_auto}\NormalTok{()}
+
+\NormalTok{pcacov }\OtherTok{\textless{}{-}} \FunctionTok{princomp}\NormalTok{(df, }\AttributeTok{cor =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{summary}\NormalTok{(pcacov, }\AttributeTok{cor =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Importance of components:
+##                           Comp.1     Comp.2    Comp.3     Comp.4      Comp.5
+## Standard deviation     3.1833165 1.05078398 0.5769763 0.50383231 0.290607615
+## Proportion of Variance 0.8444586 0.09201225 0.0277418 0.02115392 0.007037732
+## Cumulative Proportion  0.8444586 0.93647089 0.9642127 0.98536661 0.992404341
+##                             Comp.6      Comp.7      Comp.8       Comp.9
+## Standard deviation     0.193095982 0.140295449 0.124158319 0.0885069038
+## Proportion of Variance 0.003107172 0.001640234 0.001284607 0.0006527893
+## Cumulative Proportion  0.995511513 0.997151747 0.998436354 0.9990891437
+##                             Comp.10      Comp.11      Comp.12
+## Standard deviation     0.0749114592 0.0570804224 0.0453913429
+## Proportion of Variance 0.0004676439 0.0002715146 0.0001716978
+## Cumulative Proportion  0.9995567876 0.9998283022 1.0000000000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prop\_var1 }\OtherTok{\textless{}{-}}\NormalTok{ pca}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(pca}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(prop\_var1,}
+  \AttributeTok{col =} \StringTok{"red"}\NormalTok{,}
+  \AttributeTok{cex =} \DecValTok{2}\NormalTok{,}
+  \AttributeTok{lwd =} \DecValTok{2}\NormalTok{,}
+  \AttributeTok{type =} \StringTok{"b"}\NormalTok{,}
+  \AttributeTok{xlab =} \StringTok{"Thành phần chính"}\NormalTok{,}
+  \AttributeTok{ylab =} \StringTok{"Tỉ lệ"}\NormalTok{,}
+  \AttributeTok{main =} \StringTok{"Tỉ lệ các thành phần (phân tích trên bộ dữ liệu)"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{W6_files/figure-latex/p1.3-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prop\_var2 }\OtherTok{\textless{}{-}}\NormalTok{ pcacov}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(pcacov}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(prop\_var2,}
+  \AttributeTok{col =} \StringTok{"red"}\NormalTok{,}
+  \AttributeTok{cex =} \DecValTok{2}\NormalTok{,}
+  \AttributeTok{lwd =} \DecValTok{2}\NormalTok{,}
+  \AttributeTok{type =} \StringTok{"b"}\NormalTok{,}
+  \AttributeTok{xlab =} \StringTok{"Thành phần chính"}\NormalTok{,}
+  \AttributeTok{ylab =} \StringTok{"Tỉ lệ"}\NormalTok{,}
+  \AttributeTok{main =} \StringTok{"Tỉ lệ các thành phần (dùng ma trận tương quan)"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{W6_files/figure-latex/p1.3-2.pdf}}
+
+\hfill\break
+(4) Vẽ biểu đồ hai thành phần trong trường hợp sử dụng ma trận tương
+quan.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(showtext)}
+\FunctionTok{font\_add}\NormalTok{(}\StringTok{"LM"}\NormalTok{, }\StringTok{"C:/Windows/Fonts/cambria.ttc"}\NormalTok{)}
+\FunctionTok{showtext\_auto}\NormalTok{()}
+
+\NormalTok{pcacov }\OtherTok{\textless{}{-}} \FunctionTok{princomp}\NormalTok{(df, }\AttributeTok{cor =} \ConstantTok{TRUE}\NormalTok{)}
+
+\FunctionTok{biplot}\NormalTok{(pcacov,}
+  \AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+  \AttributeTok{cex =} \FunctionTok{c}\NormalTok{(.}\DecValTok{5}\NormalTok{, }\FloatTok{1.25}\NormalTok{),}
+  \AttributeTok{xlab =} \StringTok{"Thành phần chính thứ nhất"}\NormalTok{,}
+  \AttributeTok{ylab =} \StringTok{"Thành phần chính thứ hai"}\NormalTok{,}
+  \AttributeTok{main =} \StringTok{"Biểu đồ hai thành phần (sử dụng ma trận tương quan)"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{W6_files/figure-latex/p1.4-1.pdf}}
+
+\hfill\break
+(5) Tiến hành phân tích nhân tố cho bộ dữ liệu trên với 4 nhân tố. Hãy
+cho biết tỉ lệ tổng bình phương sai của 4 nhân tố.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{factanal}\NormalTok{(df, }\AttributeTok{factors =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## factanal(x = df, factors = 4)
+## 
+## Uniquenesses:
+##  CONT  INTG  DMNR  DILG  CFMG  DECI  PREP  FAMI  ORAL  WRIT  PHYS  RTEN 
+## 0.749 0.013 0.032 0.023 0.014 0.025 0.008 0.005 0.005 0.005 0.047 0.006 
+## 
+## Loadings:
+##      Factor1 Factor2 Factor3 Factor4
+## CONT                          0.499 
+## INTG  0.726   0.596   0.175  -0.273 
+## DMNR  0.666   0.616   0.305  -0.228 
+## DILG  0.916   0.345   0.121         
+## CFMG  0.874   0.326   0.259   0.220 
+## DECI  0.886   0.285   0.267   0.195 
+## PREP  0.935   0.270   0.212         
+## FAMI  0.944   0.202   0.241         
+## ORAL  0.881   0.335   0.323         
+## WRIT  0.911   0.298   0.262         
+## PHYS  0.682   0.290   0.622   0.127 
+## RTEN  0.797   0.458   0.380         
+## 
+##                Factor1 Factor2 Factor3 Factor4
+## SS loadings      7.829   1.650   1.084   0.507
+## Proportion Var   0.652   0.138   0.090   0.042
+## Cumulative Var   0.652   0.790   0.880   0.922
+## 
+## Test of the hypothesis that 4 factors are sufficient.
+## The chi square statistic is 49.78 on 24 degrees of freedom.
+## The p-value is 0.00151
+\end{verbatim}
+
+\hfill\break
+(6) Với nhiều nhân tố hơn, hãy cho biết cần bao nhiêu nhân tố để tỉ lệ
+tổng phương sai lớn hơn 99\%. Khi đó hãy cho biết biến ``CONT'' và
+``CFMG'' được viết thông qua các nhân tố \("F_i"\) như thế nào?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fa7 }\OtherTok{\textless{}{-}} \FunctionTok{factanal}\NormalTok{(df, }\AttributeTok{factors =} \DecValTok{7}\NormalTok{)}
+\NormalTok{fa7}\SpecialCharTok{$}\NormalTok{loadings}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Loadings:
+##      Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7
+## CONT                          0.994                         
+## INTG  0.578   0.783   0.143                                 
+## DMNR  0.520   0.795   0.262  -0.119                         
+## DILG  0.872   0.435   0.159                  -0.142         
+## CFMG  0.845   0.381   0.303   0.130                         
+## DECI  0.870   0.346   0.293           0.164                 
+## PREP  0.863   0.445   0.214                                 
+## FAMI  0.862   0.425   0.220          -0.102   0.104         
+## ORAL  0.787   0.527   0.304                                 
+## WRIT  0.819   0.507   0.236                                 
+## PHYS  0.626   0.368   0.674                                 
+## RTEN  0.696   0.611   0.367                                 
+## 
+##                Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7
+## SS loadings      6.493   3.127   1.123   1.040   0.059   0.048   0.016
+## Proportion Var   0.541   0.261   0.094   0.087   0.005   0.004   0.001
+## Cumulative Var   0.541   0.802   0.895   0.982   0.987   0.991   0.992
+\end{verbatim}
+
+\hfill\break
+(7) Trong phân tích nhân tố nói trên, hãy cho biết 4 nhân tố đã đủ để
+giải thích bộ dữ liệu hay chưa, nếu chưa thì hãy cho biết cần bao nhiêu
+nhân tô? Xét ở mức ý nghĩa 5\% cho kiểm định đó.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{factanal}\NormalTok{(df, }\AttributeTok{factors =} \DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## factanal(x = df, factors = 5)
+## 
+## Uniquenesses:
+##  CONT  INTG  DMNR  DILG  CFMG  DECI  PREP  FAMI  ORAL  WRIT  PHYS  RTEN 
+## 0.693 0.021 0.025 0.005 0.005 0.028 0.007 0.005 0.005 0.005 0.016 0.007 
+## 
+## Loadings:
+##      Factor1 Factor2 Factor3 Factor4 Factor5
+## CONT                          0.551         
+## INTG  0.687   0.644   0.182  -0.242         
+## DMNR  0.615   0.694   0.286  -0.183         
+## DILG  0.908   0.336   0.180           0.156 
+## CFMG  0.849   0.363   0.291   0.237         
+## DECI  0.864   0.320   0.296   0.186         
+## PREP  0.912   0.319   0.243                 
+## FAMI  0.917   0.279   0.257                 
+## ORAL  0.845   0.411   0.330                 
+## WRIT  0.878   0.382   0.266                 
+## PHYS  0.640   0.313   0.684                 
+## RTEN  0.758   0.510   0.392                 
+## 
+##                Factor1 Factor2 Factor3 Factor4 Factor5
+## SS loadings      7.283   2.097   1.246   0.510   0.047
+## Proportion Var   0.607   0.175   0.104   0.042   0.004
+## Cumulative Var   0.607   0.782   0.885   0.928   0.932
+## 
+## Test of the hypothesis that 5 factors are sufficient.
+## The chi square statistic is 31.85 on 16 degrees of freedom.
+## The p-value is 0.0105
+\end{verbatim}
+
+\hfill\break
+\textbf{Câu 2. } Bộ dữ liệu \textbf{wdbc {kdevine}} trong R được thu
+thập từ Bệnh viện Đại học Wisconsin, Madison, và được sử dụng để hỗ trợ
+trong việc chẩn đoán ung thư vú thông qua các đặc điểm của tế bào. Bộ dữ
+liệu gồm 569 quan sát và 31 biến, cụ thể các đặc trưng: Radius (Độ dài
+trung bình từ tâm đến các điểm trên chu vi), Texture (Độ lệch chuẩn của
+các giá trị xám), Perimeter (Chu vi của tế bào), Area (Diện tích của tế
+bào), Smoothness (Biến thiên cục bộ trong độ dài bán kính), Compactness
+(Tính toán từ chu vi và diện tích), Concavity (Mức độ nghiêm trọng của
+các phần lõm trên đường viền), Concave Points (Số lượng phần lõm trên
+đường viền), Symmetry (Độ đối xứng của tế bào), Fractal Dimension (Đánh
+giá độ phức tạp của hình dạng tế bào).
+
+\hfill\break
+(1) Tiến hành tiền xử lý dữ liệu, bao gồm việc loại bỏ các cột không cần
+thiết và chuyển đổi các biến phân loại thành biến số.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(kdevine)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The kdevine package is no longer actively developed. Consider using 
+##    - the 'kde1d' package for marginal estimation, 
+##    - the functions vine() and vinecop() from the 'rvinecopulib' 
+##      package as replacements for kdevine() and kdevinecop().
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ wdbc}
+
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{ID }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+
+\NormalTok{df[, }\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(df[, }\DecValTok{1}\NormalTok{]) }\SpecialCharTok{{-}} \DecValTok{1}
+
+\FunctionTok{head}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   diagnosis mean radius mean texture mean perimeter mean area mean smoothness
+## 1         1       17.99        10.38         122.80    1001.0         0.11840
+## 2         1       20.57        17.77         132.90    1326.0         0.08474
+## 3         1       19.69        21.25         130.00    1203.0         0.10960
+## 4         1       11.42        20.38          77.58     386.1         0.14250
+## 5         1       20.29        14.34         135.10    1297.0         0.10030
+## 6         1       12.45        15.70          82.57     477.1         0.12780
+##   mean compactness mean concavity mean concave points mean symmetry
+## 1          0.27760         0.3001             0.14710        0.2419
+## 2          0.07864         0.0869             0.07017        0.1812
+## 3          0.15990         0.1974             0.12790        0.2069
+## 4          0.28390         0.2414             0.10520        0.2597
+## 5          0.13280         0.1980             0.10430        0.1809
+## 6          0.17000         0.1578             0.08089        0.2087
+##   mean fractal dimension worst radius worst texture worst perimeter worst area
+## 1                0.07871       1.0950        0.9053           8.589     153.40
+## 2                0.05667       0.5435        0.7339           3.398      74.08
+## 3                0.05999       0.7456        0.7869           4.585      94.03
+## 4                0.09744       0.4956        1.1560           3.445      27.23
+## 5                0.05883       0.7572        0.7813           5.438      94.44
+## 6                0.07613       0.3345        0.8902           2.217      27.19
+##   worst smoothness worst compactness worst concavity worst concave points
+## 1         0.006399           0.04904         0.05373              0.01587
+## 2         0.005225           0.01308         0.01860              0.01340
+## 3         0.006150           0.04006         0.03832              0.02058
+## 4         0.009110           0.07458         0.05661              0.01867
+## 5         0.011490           0.02461         0.05688              0.01885
+## 6         0.007510           0.03345         0.03672              0.01137
+##   worst symmetry worst fractal dimension sd radius sd texture sd perimeter
+## 1        0.03003                0.006193     25.38      17.33       184.60
+## 2        0.01389                0.003532     24.99      23.41       158.80
+## 3        0.02250                0.004571     23.57      25.53       152.50
+## 4        0.05963                0.009208     14.91      26.50        98.87
+## 5        0.01756                0.005115     22.54      16.67       152.20
+## 6        0.02165                0.005082     15.47      23.75       103.40
+##   sd area sd smoothness sd compactness sd concavity sd concave points
+## 1  2019.0        0.1622         0.6656       0.7119            0.2654
+## 2  1956.0        0.1238         0.1866       0.2416            0.1860
+## 3  1709.0        0.1444         0.4245       0.4504            0.2430
+## 4   567.7        0.2098         0.8663       0.6869            0.2575
+## 5  1575.0        0.1374         0.2050       0.4000            0.1625
+## 6   741.6        0.1791         0.5249       0.5355            0.1741
+##   sd symmetry sd fractal dimension
+## 1      0.4601              0.11890
+## 2      0.2750              0.08902
+## 3      0.3613              0.08758
+## 4      0.6638              0.17300
+## 5      0.2364              0.07678
+## 6      0.3985              0.12440
+\end{verbatim}
+
+\hfill\break
+(2) Chuẩn hóa dữ liệu để đảm bảo rằng tất cả các biến có cùng quy mô.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_scaled }\OtherTok{\textless{}{-}} \FunctionTok{scale}\NormalTok{(df)}
+
+\FunctionTok{apply}\NormalTok{(df\_scaled, }\DecValTok{2}\NormalTok{, mean)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               diagnosis             mean radius            mean texture 
+##            7.061834e-17           -1.379776e-16            6.157678e-17 
+##          mean perimeter               mean area         mean smoothness 
+##           -1.190559e-16            1.219971e-16            1.618800e-16 
+##        mean compactness          mean concavity     mean concave points 
+##           -7.605173e-17            3.929080e-17           -5.337457e-17 
+##           mean symmetry  mean fractal dimension            worst radius 
+##            1.679646e-16            4.810260e-16            3.721164e-17 
+##           worst texture         worst perimeter              worst area 
+##           -1.065855e-16            1.074950e-16            2.873226e-17 
+##        worst smoothness       worst compactness         worst concavity 
+##            1.290824e-16           -1.610869e-17           -5.978051e-17 
+##    worst concave points          worst symmetry worst fractal dimension 
+##            7.922107e-18            9.126277e-17            1.564424e-18 
+##               sd radius              sd texture            sd perimeter 
+##           -8.483720e-17            9.038321e-18            5.661517e-17 
+##                 sd area           sd smoothness          sd compactness 
+##            6.734248e-18           -2.269302e-16            1.261676e-17 
+##            sd concavity       sd concave points             sd symmetry 
+##            9.174370e-17            1.166365e-17            2.760417e-16 
+##    sd fractal dimension 
+##            2.002241e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{apply}\NormalTok{(df\_scaled, }\DecValTok{2}\NormalTok{, sd)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               diagnosis             mean radius            mean texture 
+##                       1                       1                       1 
+##          mean perimeter               mean area         mean smoothness 
+##                       1                       1                       1 
+##        mean compactness          mean concavity     mean concave points 
+##                       1                       1                       1 
+##           mean symmetry  mean fractal dimension            worst radius 
+##                       1                       1                       1 
+##           worst texture         worst perimeter              worst area 
+##                       1                       1                       1 
+##        worst smoothness       worst compactness         worst concavity 
+##                       1                       1                       1 
+##    worst concave points          worst symmetry worst fractal dimension 
+##                       1                       1                       1 
+##               sd radius              sd texture            sd perimeter 
+##                       1                       1                       1 
+##                 sd area           sd smoothness          sd compactness 
+##                       1                       1                       1 
+##            sd concavity       sd concave points             sd symmetry 
+##                       1                       1                       1 
+##    sd fractal dimension 
+##                       1
+\end{verbatim}
+
+\hfill\break
+(3) Tính toán ma trận hiệp phương sai và tìm giá trị riêng, vector
+riêng.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cov\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{cov}\NormalTok{(df\_scaled)}
+
+\NormalTok{eigen\_result }\OtherTok{\textless{}{-}} \FunctionTok{eigen}\NormalTok{(cov\_matrix)}
+
+\NormalTok{eigen\_values }\OtherTok{\textless{}{-}}\NormalTok{ eigen\_result}\SpecialCharTok{$}\NormalTok{values}
+\NormalTok{eigen\_vectors }\OtherTok{\textless{}{-}}\NormalTok{ eigen\_result}\SpecialCharTok{$}\NormalTok{vectors}
+
+\NormalTok{eigen\_values}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 1.391777e+01 5.726352e+00 2.846849e+00 1.998363e+00 1.659079e+00
+##  [6] 1.207508e+00 6.847192e-01 4.848554e-01 4.168948e-01 3.508936e-01
+## [11] 3.048554e-01 2.909858e-01 2.610104e-01 2.122756e-01 1.485762e-01
+## [16] 8.816256e-02 7.986017e-02 5.903533e-02 5.146191e-02 4.821595e-02
+## [21] 3.070628e-02 2.952665e-02 2.734467e-02 2.428359e-02 1.755221e-02
+## [26] 1.547334e-02 8.056144e-03 6.869732e-03 1.588467e-03 7.416788e-04
+## [31] 1.326347e-04
+\end{verbatim}
+
+\hfill\break
+(4) Thực hiện PCA và phân tích kết quả. Sau đó, vẽ các biểu đồ liên quan
+đến PCA, bao gồm biplot, biểu đồ tỷ lệ phương sai giải thích và biểu đồ
+phân tán các thành phần chính.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pca }\OtherTok{\textless{}{-}} \FunctionTok{princomp}\NormalTok{(df\_scaled)}
+
+\FunctionTok{summary}\NormalTok{(pca)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Importance of components:
+##                           Comp.1    Comp.2     Comp.3     Comp.4     Comp.5
+## Standard deviation     3.7273732 2.3908760 1.68577763 1.41239197 1.28691989
+## Proportion of Variance 0.4489604 0.1847210 0.09183385 0.06446333 0.05351866
+## Cumulative Proportion  0.4489604 0.6336814 0.72551525 0.78997857 0.84349724
+##                            Comp.6     Comp.7    Comp.8     Comp.9    Comp.10
+## Standard deviation     1.09790061 0.82675013 0.6957035 0.64510631 0.59184200
+## Proportion of Variance 0.03895187 0.02208771 0.0156405 0.01344822 0.01131915
+## Cumulative Proportion  0.88244910 0.90453682 0.9201773 0.93362554 0.94494469
+##                            Comp.11    Comp.12     Comp.13     Comp.14
+## Standard deviation     0.551651721 0.53895681 0.510442654 0.460328668
+## Proportion of Variance 0.009834045 0.00938664 0.008419691 0.006847598
+## Cumulative Proportion  0.954778732 0.96416537 0.972585063 0.979432661
+##                           Comp.15     Comp.16     Comp.17     Comp.18
+## Standard deviation     0.38511695 0.296660781 0.282346987 0.242758270
+## Proportion of Variance 0.00479278 0.002843954 0.002576135 0.001904366
+## Cumulative Proportion  0.98422544 0.987069395 0.989645529 0.991549895
+##                            Comp.19     Comp.20      Comp.21      Comp.22
+## Standard deviation     0.226652742 0.219388265 0.1750780211 0.1716821445
+## Proportion of Variance 0.001660062 0.001555353 0.0009905251 0.0009524726
+## Cumulative Proportion  0.993209957 0.994765310 0.9957558349 0.9967083075
+##                            Comp.23      Comp.24      Comp.25      Comp.26
+## Standard deviation     0.165216858 0.1556949415 0.1323683001 0.1242825166
+## Proportion of Variance 0.000882086 0.0007833417 0.0005662005 0.0004991399
+## Cumulative Proportion  0.997590394 0.9983737352 0.9989399357 0.9994390756
+##                             Comp.27      Comp.28      Comp.29      Comp.30
+## Standard deviation     0.0896771168 0.0828109811 3.982054e-02 2.720984e-02
+## Proportion of Variance 0.0002598756 0.0002216043 5.124088e-05 2.392512e-05
+## Cumulative Proportion  0.9996989512 0.9999205555 9.999718e-01 9.999957e-01
+##                             Comp.31
+## Standard deviation     1.150659e-02
+## Proportion of Variance 4.278539e-06
+## Cumulative Proportion  1.000000e+00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{var }\OtherTok{\textless{}{-}}\NormalTok{ pca}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(pca}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+
+\FunctionTok{plot}\NormalTok{(var,}
+  \AttributeTok{col =} \StringTok{"red"}\NormalTok{,}
+  \AttributeTok{cex =} \DecValTok{2}\NormalTok{,}
+  \AttributeTok{lwd =} \DecValTok{2}\NormalTok{,}
+  \AttributeTok{type =} \StringTok{"b"}\NormalTok{,}
+  \AttributeTok{xlab =} \StringTok{"Thành phần chính"}\NormalTok{,}
+  \AttributeTok{ylab =} \StringTok{"Tỉ lệ"}\NormalTok{,}
+  \AttributeTok{main =} \StringTok{"Tỉ lệ các thành phần (phân tích trên bộ dữ liệu)"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{W6_files/figure-latex/p2.4-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{biplot}\NormalTok{(pca,}
+  \AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+  \AttributeTok{cex =} \FunctionTok{c}\NormalTok{(.}\DecValTok{5}\NormalTok{, }\FloatTok{1.25}\NormalTok{),}
+  \AttributeTok{xlab =} \StringTok{"Thành phần chính thứ nhất"}\NormalTok{,}
+  \AttributeTok{ylab =} \StringTok{"Thành phần chính thứ hai"}\NormalTok{,}
+  \AttributeTok{main =} \StringTok{"Biểu đồ hai thành phần (sử dụng ma trận tương quan)"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{W6_files/figure-latex/p2.4-2.pdf}}
+
+\hfill\break
+(5) Viết nhận xét về kết quả phân tích và ý nghĩa của các thành phần
+chính.
+
+Thành phần chính thứ nhất giải thích khoảng 45\% dữ liệu.
+
+Thành phần chính thứ hai giải thích khoảng 18\% dữ liệu.
+
+Thành phần chính thứ ba giải thích khoảng 9\% dữ liệu.
+
+\ldots{}
+
+7 thành phần chính đầu tiên giải thích khoảng 90\% dữ liệu.
+
+11 thành phần chính đầu tiên giải thích khoảng 95\% dữ liệu.
+
+17 thành phần chính đầu tiên giải thích khoảng 99\% dữ liệu.
+
+\end{document}

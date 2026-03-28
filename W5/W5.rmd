@@ -1,0 +1,350 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 5: Nhận diện phân phối chuẩn nhiều chiều**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+---
+
+\textbf{Câu 1. } Sinh 1000 quan sát từ phân bố chuẩn 3-chiều với:
+
+(i) Vector kỳ vọng $\mu = (1, -1, 3)^T$
+
+(ii) Ma trận hiệp phương sai $\sum = \begin{pmatrix}
+1 & 0.3 & 0.2\\
+0.3 & 1 & 0.4\\
+0.2 & 0.4 & 1
+\end{pmatrix}$
+
+\
+(a) Tính toán giá trị tương quan mẫu theo từng cặp.
+```{r p1a}
+library(MASS)
+
+set.seed(42)
+
+mu <- c(1, -1, 3)
+
+sigma <- matrix(c(1, 0.3, 0.2, 0.3, 1, 0.4, 0.2, 0.4, 1), nrow = 3)
+
+n <- 1000
+
+samples <- mvrnorm(n = n, mu = mu, Sigma = sigma)
+
+samples_df <- as.data.frame(samples)
+head(samples_df)
+
+# Giá trị tương quan mẫu theo từng cặp (Ma trận tương quan)
+cor(samples_df)
+```
+
+\
+(b) Đặt tên các biến lần lượt là $A$, $B$ và $C$. Thêm một biến $D = A + 2B - 3C$ vào mẫu trên.
+Hãy kiểm tra tính chuẩn nhiều chiều bằng nhiều phương pháp.
+
+Do khi thêm biến $D$ là tổ hợp tuyến tính của các biến còn lại nên ma trận hiệp phương sai không khả nghịch.
+Do vậy ta chỉ kiểm định với 3 biến $A, B, C$.
+```{r p1b}
+colnames(samples_df) <- c("A", "B", "C")
+samples_df$D <- samples_df$A + 2 * samples_df$B - 3 * samples_df$C
+
+# Kiểm định bằng đồ thị QQ-plot về khoảng cách Mahalanobis
+mah <- mahalanobis(
+  samples_df[, 1:3],
+  colMeans(samples_df[, 1:3]),
+  var(samples_df[, 1:3])
+)
+
+qqplot(
+  qchisq((1:nrow(samples_df) - 0.5) / nrow(samples_df), df = 3),
+  sort(mah)
+)
+abline(0, 1, col = "red")
+
+# Kiểm định bằng Shapiro-Wilk Test
+st <- shapiro.test(qnorm(pchisq(mah, 3)))
+st
+if (st$p.value > 0.05) {
+  print("Mẫu có phân phối chuẩn nhiều chiều")
+} else {
+  print("Mẫu không có phân phối chuẩn nhiều chiều")
+}
+
+# Kiểm định Mardia Test
+library(psych)
+mardia(samples_df[, 1:3])
+
+# Tổng quát hóa của kiểm định Shapiro-Wilk Test cho QQ-plot
+library(mvnormtest)
+mst <- mshapiro.test(t(samples_df[, 1:3]))
+if (mst$p.value > 0.05) {
+  print("Mẫu có phân phối chuẩn nhiều chiều")
+} else {
+  print("Mẫu không có phân phối chuẩn nhiều chiều")
+}
+
+# Kiểm định Energy Test
+library(energy)
+et <- mvnorm.etest(samples_df[, 1:3], R = 1000)
+et
+if (et$p.value > 0.05) {
+  print("Mẫu có phân phối chuẩn nhiều chiều")
+} else {
+  print("Mẫu không có phân phối chuẩn nhiều chiều")
+}
+```
+\
+\textbf{Câu 2. } Bộ dữ liệu \textbf{pulmonary} trong thư viện \textbf{ICSNP} đo lường sự thay đổi trong
+chức năng phổi của 12 công nhân sau khi tiếp xúc với bụi bông trong 6 giờ.
+
+\
+(a) Tính giá trị trung bình mẫu, ma trận tương quan mẫu và ma trận hiệp phương sai mẫu của dữ liệu.
+```{r p2a}
+library(ICSNP)
+
+data(pulmonary)
+pulmonary
+
+# Giá trị trung bình mẫu
+colMeans(pulmonary)
+
+# Ma trận hiệp phương sai mẫu
+cov(pulmonary)
+
+# Ma trận tương quan mẫu
+cor(pulmonary)
+```
+
+\
+(b) Vẽ ma trận biểu đồ tán xạ cho bộ dữ liệu và nêu nhận xét.
+```{r p2b}
+library(showtext)
+font_add("LM", "C:/Windows/Fonts/cambria.ttc")
+showtext_auto()
+
+pairs(pulmonary,
+      main = "Ma trận biểu đồ tán xạ cho bộ dữ liệu pulmonary",
+      pch = 19,
+      col = "blue")
+```
+
+Ma trận biểu đồ tán xạ cho thấy các biến có xu hướng tương quan tuyến tính với nhau. Không quan sát thấy sự tồn tại của các điểm ngoại lai rõ rệt. Một số cặp biến có tương quan dương khá mạnh.
+
+\
+(c) Các biến trong bộ dữ liệu có tuân theo phân phối chuẩn không? Kiểm định tính chuẩn
+nhiều chiều của dữ liệu bằng nhiều phương pháp.
+```{r p2c}
+# QQ-plot khoảng cách Mahalanobis Test
+mah <- mahalanobis(pulmonary,
+                   colMeans(pulmonary),
+                   cov(pulmonary))
+
+qqplot(
+  qchisq((1:nrow(pulmonary)-0.5)/nrow(pulmonary),
+         df=ncol(pulmonary)),
+  sort(mah)
+)
+
+abline(0, 1, col = "red")
+
+# Mardia Test
+library(psych)
+mardia(pulmonary)
+
+# Shapiro-Wilk Test
+library(mvnormtest)
+mst <- mshapiro.test(t(pulmonary))
+if (mst$p.value > 0.05) {
+  print("Mẫu có phân phối chuẩn nhiều chiều")
+} else {
+  print("Mẫu không có phân phối chuẩn nhiều chiều")
+}
+
+# Energy Test
+library(energy)
+et <- mvnorm.etest(pulmonary, R = 1000)
+if (et$p.value > 0.05) {
+  print("Mẫu có phân phối chuẩn nhiều chiều")
+} else {
+  print("Mẫu không có phân phối chuẩn nhiều chiều")
+}
+```
+
+\
+(d) Hãy kiểm định giả thuyết rằng giá trị trung bình trước và sau khi tiếp xúc bụi là không
+khác nhau.
+\[
+\begin{aligned}
+H_0 &: \mu_{before} = \mu_{after} \\
+H_1 &: \mu_{before} \neq \mu_{after}
+\end{aligned}
+\]
+Do bộ dữ liệu là sự thay đổi sau 6 tiếng của các thông số, nên ta cần kiểm định:
+\[
+\begin{aligned}
+H_0 &: \mu = (0,0,0)^T \\
+H_1 &: \mu \neq (0,0,0)^T
+\end{aligned}
+\]
+```{r p2d}
+# Kiểm định t.test riêng với từng biến
+p1 <- t.test(pulmonary$FVC, mu = 0)
+p1
+p2 <- t.test(pulmonary$FEV, mu = 0)
+p2
+p3 <- t.test(pulmonary$CC, mu = 0)
+p3
+if (p1$p.value > 0.05 && p2$p.value > 0.05 && p3$p.value > 0.05) {
+  print("Chưa đủ cơ sở để bác bỏ H0")
+} else {
+  print("Bác bỏ H0")
+}
+
+# Kiểm định Hotelling T2
+ht2 <- HotellingsT2(pulmonary, mu = c(0, 0, 0))
+ht2
+if (ht2$p.value > 0.05) {
+  print("Chưa đủ cơ sở để bác bỏ H0")
+} else {
+  print("Bác bỏ H0")
+}
+```
+
+\
+\textbf{Câu 3.} Tập dữ liệu \textbf{Smarket} trong thư viện \textbf{ISLR} gồm 9 biến số được đo trong 1250 thời
+điểm từ năm 2001 đến 2005 của thị trường chứng khoán S&P. Xét vecto $X$ gồm các biến định lượng trong tập dữ liệu.
+
+\
+(a) Tính giá trị trung bình mẫu, ma trận tương quan mẫu, ma trận hiệp phương sai mẫu.
+```{r p3a}
+library(ISLR)
+
+data(Smarket)
+head(Smarket)
+
+x <- Smarket[, 2:8]
+
+# Giá trị trung bình mẫu
+colMeans(x)
+
+# Ma trận tương quan mẫu
+cor(x)
+
+# Ma trận hiệp phương sai mẫu
+cov(x)
+```
+
+\
+(b) Vẽ biểu đồ phân tán của các biến và biểu đồ nhiệt của ma trận tương quan mẫu của $X$.
+```{r p3b}
+library(ggplot2)
+
+pairs(x,
+  main = "Biểu đồ phân tán của các biến",
+  pch = 19,
+  col = "blue"
+)
+
+cor_mat <- as.data.frame(as.table(cor(x)))
+colnames(cor_mat) <- c("Z1", "Z2", "Correlation")
+
+ggplot(cor_mat, aes(x = Z1, y = Z2, fill = Correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(Correlation, 3)), color = "black") +
+  scale_y_discrete(limits = rev(levels(cor_mat$Z2))) +
+  scale_fill_gradient2(
+    low = "blue",
+    mid = "white",
+    high = "red",
+    midpoint = 0,
+    limits = c(-1, 1),
+    name = "Hệ số tương quan"
+  ) +
+  theme_minimal(base_family = "LM") +
+  labs(title = "Biểu đồ nhiệt của ma trận tương quan mẫu")
+```
+
+\
+(c) Kiểm tra tính chuẩn nhiều chiều của $X$.
+```{r p3c}
+library(mvnormtest)
+mst <- mshapiro.test(t(x))
+mst
+if (mst$p.value > 0.05) {
+  print("Mẫu có phân phối chuẩn nhiều chiều")
+} else {
+  print("Mẫu không có phân phối chuẩn nhiều chiều")
+}
+```
+
+\
+(d) Có sự khác biệt giữa lợi nhuận trung bình một ngày trước và ba ngày trước ngày đang
+xét không?
+\[
+\begin{aligned}
+H_0 &: \mu_{Lag1} = \mu_{Lag3} \\
+H_1 &: \mu_{Lag1} \neq \mu_{Lag3}
+\end{aligned}
+\]
+```{r p3d}
+tt <- t.test(x$Lag1, x$Lag3, paired = TRUE)
+tt
+if (tt$p.value > 0.05) {
+  print("Chưa đủ cơ sở để bác bỏ H0")
+} else {
+  print("Bác bỏ H0")
+}
+```
+
+\
+(e) Lợi nhuận trung bình tại ngày đang xét và các ngày trước đó có thực sự khác 0 không?
+\[
+\begin{aligned}
+H_0 &: \mu = \theta \\
+H_1 &: \mu \neq \theta
+\end{aligned}
+\]
+```{r p3e}
+ht2 <- HotellingsT2(x, mu = rep(0, ncol(x)))
+ht2
+if (ht2$p.value > 0.05) {
+  print("Chưa đủ cơ sở để bác bỏ H0")
+} else {
+  print("Bác bỏ H0")
+}
+```
+
+\
+(f) Kiểm định xem có sự khác biệt giữa năm 2004 và 2005 về lợi nhuận trung bình
+tại ngày đang xét và các ngày trước đó không?
+\[
+\begin{aligned}
+H_0 &: \mu_{2004} = \mu_{2005} \\
+H_1 &: \mu_{2004} \neq \mu_{2005}
+\end{aligned}
+\]
+```{r p3f}
+ht2 <- HotellingsT2(
+  Smarket[Smarket$Year == 2004, 2:8],
+  Smarket[Smarket$Year == 2005, 2:8]
+)
+ht2
+if (ht2$p.value > 0.05) {
+  print("Chưa đủ cơ sở để bác bỏ H0")
+} else {
+  print("Bác bỏ H0")
+}
+```

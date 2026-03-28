@@ -77,14 +77,19 @@ check_shapiro_test(data[, "time"])
 
 \
 \
-\
 (iii) Dùng hàm pairs để vẽ ma trận biểu đồ tán xạ cho bộ dữ liệu.
-
 ```{r p1.3}
 pairs(data)
 ```
-
 \
+\
+(iv) Bình phương hiệu số đó có phân phối chuẩn không?
+```{r p1.4}
+model <- lm(time ~ dist + climb, data = hills)
+summary(model)
+```
+p-value < 0.05 nên bình phương hiệu số đó không có phân phối chuẩn.
+
 \
 \
 \textbf{Câu 2.} Tập dữ liệu \textbf{iris} trong thư viện datasets gồm một số đặc điểm của các bông hoa
@@ -96,7 +101,6 @@ library(datasets)
 iris
 ```
 
-\
 \
 (i) Tìm giá trị trung bình và độ lệch tiêu chuẩn của độ dài, độ rộng cánh hoa và đài hoa.
 ```{r p2.1}
@@ -116,4 +120,226 @@ sd(iris$Petal.Width)
 sd(iris$Sepal.Length)
 # Độ lệch tiêu chuẩn độ rộng đài hoa
 sd(iris$Sepal.Width)
+```
+
+\
+(ii) Các biến trong bộ dữ liệu có tuân theo phân phối chuẩn không?
+```{r p2.2}
+# Kiểm tra biến độ dài cánh hoa
+check_shapiro_test(iris$Petal.Length)
+# Kiểm tra biến độ rộng cánh hoa
+check_shapiro_test(iris$Petal.Width)
+# Kiểm tra biến độ dài đài hoa
+check_shapiro_test(iris$Sepal.Length)
+# Kiểm tra biến độ rộng đài hoa
+check_shapiro_test(iris$Sepal.Width)
+```
+
+\
+(iii) Vẽ đồ thị hàm mật độ và hàm phân phối của các biến có phân phối chuẩn trên cùng
+một khung hình. Đặt tên đồ thị, tên và độ dài các trục phù hợp.
+```{r p2.3, warning=FALSE}
+# Do độ rộng đài hoa tuân theo phân phối chuẩn
+# nên ta sẽ vẽ đồ thị cho độ dài đài hoa
+library(showtext)
+font_add("LM", "C:/Windows/Fonts/C:/Windows/Fonts/cambria.ttc")
+showtext_auto()
+par(family = "LM")
+plot(ecdf(iris$Sepal.Width),
+  main = "Hàm mật độ và hàm phân phối của độ rộng đài hoa",
+  xlab = "Độ dài đài hoa (cm)",
+  ylab = "Hàm phân phối tích lũy (CDF)",
+  col = "blue",
+  lwd = 2
+)
+par(new = TRUE)
+plot(density(iris$Sepal.Width),
+  main = "",
+  axes = FALSE,
+  xlab = "",
+  ylab = "",
+  col = "red",
+  lwd = 2
+)
+axis(side = 4)
+mtext("Hàm mật độ", side = 4, line = 3)
+legend("topleft",
+  legend = c("Hàm phân phối tích lũy", "Hàm mật độ"),
+  col = c("blue", "red"),
+  lwd = 2,
+  cex = 0.6
+)
+```
+
+\
+\
+(iv) Với mức ý nghĩa 5%, có thể nói độ rộng trung bình của đài hoa nhỏ hơn 3.5 không?
+```{r p2.4}
+# Kiểm định 1 phía với alpha 0.05, muy = 3.5
+t.test(
+  iris$Sepal.Width,
+  mu = 3.5,
+  alternative = "less",
+  conf.level = 0.95
+)
+```
+
+\
+\
+(v) Tìm a, biết xác suất để độ rộng đài hoa nhỏ hơn a là 70%.
+```{r p2.5}
+# Tìm giá trị phân vị mức 70% của độ rộng đài hoa
+a <- qnorm(
+  0.7,
+  mean = mean(iris$Sepal.Width),
+  sd = sd(iris$Sepal.Width)
+)
+a
+```
+
+\
+\
+(vi) Độ rộng trung bình của đài hoa của loài setosa và versicolor có thực sự khác nhau
+không? Mức ý nghĩa 1%.
+```{r p2.6}
+# Kiểm định giả thuyết GTTB của đài hoa 2 loài khác nhau không với alpha = 0.01
+setosa <- subset(iris, Species == "setosa", "Sepal.Width")
+versicolor <- subset(iris, Species == "versicolor", "Sepal.Width")
+t.test(
+  setosa,
+  versicolor,
+  conf.level = 0.99
+)
+```
+
+\
+\
+\textbf{Câu 3.} Sinh 30 mẫu ngẫu nhiên, mỗi mẫu gồm 20 quan sát có phân phối chuẩn với kỳ vọng
+158 và phương sai 8.
+```{r p3}
+# Sinh 30 mẫu ngẫu nhiên, mỗi mẫu có 20 quan sát có phân phối chuẩn
+# với kỳ vọng là 158 và phương sai là 8 (hay độ lệch tiêu chuẩn là căn 8)
+muy <- 158
+sigma <- sqrt(8)
+samples <- matrix(
+  rnorm(30 * 20, mean = muy, sd = sigma),
+  nrow = 30,
+  ncol = 20
+)
+samples
+```
+
+\
+\
+(i) Tìm khoảng tin cậy 98% cho giá trị trung bình của các mẫu ngẫu nhiên đó.
+\
+\
+Có:
+$\sigma = \sqrt{8}, n = 20, \alpha = 0.02, z_{1-\frac{\alpha}{2}} = z_{0.99}$
+\
+\
+$\Rightarrow$ Khoảng tin cậy của giá trị trung bình các mẫu ngẫu nhiên này là: 
+$\bar{X} \pm z_{0.99}\frac{\sigma}{\sqrt{n}}$
+```{r p3.1}
+confidence_interval <- matrix(NA, nrow = 30, ncol = 2)
+colnames(confidence_interval) <- c("Lower", "Upper")
+for (i in c(1:30)) {
+  x <- samples[i, ]
+  xbar <- mean(x)
+  n <- length(x)
+  z <- qnorm(0.99)
+  val <- z * sigma / sqrt(n)
+  ci <- c(xbar - val, xbar + val)
+  confidence_interval[i, ] <- ci
+  cat(sprintf(
+    "Khoảng tin cậy của mẫu %d là: (%f, %f).\n",
+    i, ci[1], ci[2]
+  ))
+}
+```
+
+\
+\
+(ii) Mẫu thứ bao nhiêu có khoảng tin cậy rộng nhất/hẹp nhất?
+\
+\
+Khoảng tin cậy của giá trị trung bình các mẫu ngẫu nhiên này là: 
+$\bar{X} \pm z_{0.99}\frac{\sigma}{\sqrt{n}}$
+\
+Do đó độ rộng của khoảng tin cậy không phụ thuộc vào mẫu,
+mà chỉ phụ thuộc vào $n, \sigma và \alpha$
+```{r p3.2}
+x <- samples[1, ]
+xbar <- mean(x)
+n <- length(x)
+z <- qnorm(0.99)
+val <- z * sigma / sqrt(n)
+cat(sprintf(
+  "Độ rộng khoảng tin cậy là: %f.\n",
+  val * 2
+))
+```
+
+\
+\
+(iii) Tìm mẫu thứ i biết giá trị trung bình của mẫu này có giá trị lớn nhất.
+In ra màn hình "Mẫu thứ i có giá trị trung bình lớn nhất".
+```{r p3.3}
+max_mean <- 0
+max_idx <- 0
+for (i in c(1:30)) {
+  x <- samples[i, ]
+  if (mean(x) > max_mean) {
+    max_idx <- i
+    max_mean <- mean(x)
+  }
+}
+cat(sprintf(
+  "Mẫu thứ %d có giá trị trung bình lớn nhất.\n",
+  max_idx
+))
+```
+\
+\
+(iv) Vẽ các khoảng tin cậy ở ý (i) thỏa mãn các khoảng đó chứa giá trị trung bình của mẫu
+gồm toàn bộ các quan sát trong 30 mẫu ngẫu nhiên được sinh ban đầu. Ký hiệu hai
+đầu mút mỗi khoảng bằng chấm tròn đỏ, độ dài khoảng có màu xanh lá cây; đặt tên
+đồ thị là "Khoảng tin cậy cho GTTB của các mẫu ngẫu nhiên", trục Ox là "Khoảng
+tin cậy cho GTTB", trục Oy là "Các mẫu ngẫu nhiên".
+```{r p3.4}
+overall_mean <- mean(samples)
+
+ci_lower <- confidence_interval[, 1]
+ci_upper <- confidence_interval[, 2]
+
+idx <- which(ci_lower <= overall_mean & ci_upper >= overall_mean)
+
+plot(
+  NA,
+  xlim = range(ci_lower[idx], ci_upper[idx]),
+  ylim = c(1, length(idx)),
+  xlab = "Khoảng tin cậy cho GTTB",
+  ylab = "Các mẫu ngẫu nhiên",
+  main = "Khoảng tin cậy cho GTTB của các mẫu ngẫu nhiên"
+)
+
+for (j in seq_along(idx)) {
+  i <- idx[j]
+
+  segments(
+    ci_lower[i], j,
+    ci_upper[i], j,
+    col = "darkgreen",
+    lwd = 2
+  )
+
+  points(
+    c(ci_lower[i], ci_upper[i]),
+    c(j, j),
+    col = "red",
+    pch = 16
+  )
+}
+
+abline(v = overall_mean, lty = 2, lwd = 2)
 ```
