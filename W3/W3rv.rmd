@@ -1,0 +1,155 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 3: Khoảng tin cậy - Bài toán kiểm định - Hồi quy tuyến tính đơn**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+---
+
+\textbf{Câu 1.} Người ta đo chiều cao của trẻ mới được sinh ra trong một tuần tại một nhà
+hộ sinh cho kết quả dưới đây (đơn vị là cm)
+
+```{r p1}
+data <- c(49, 50, 45, 51, 47, 49, 48, 54, 53, 55, 45, 50, 48)
+t.test(data, mu = 50, conf.level = 0.95)
+```
+
+\
+\textbf{Câu 2.} Một tay đua xe đạp nói rằng mỗi ngày trung bình anh ta đạp xe ít nhất 5 dặm
+(trong rất nhiều năm). Chọn ngẫu nhiên 8 ngày trong sổ tay anh ta thì thấy các số liệu ghi
+quãng đường anh ta đi như sau:
+```{r p2}
+data <- c(5.3, 4.5, 4.8, 5.1, 4.3, 4.8, 4.9, 4.7)
+t.test(data, mu = 5, alternative = "less", conf.level = 0.95)
+```
+
+\
+\textbf{Câu 3.} Trong 200 sinh viên có 68 sinh viên cao trên 170cm. Kiểm định xem tỷ lệ sinh viên
+cao trên 170cm có thực sự khác 40% hay không?
+
+```{r p3}
+prop.test(x = 68, n = 200, p = 0.4, alternative = "two.sided", conf.level = 0.95)
+```
+
+\
+\textbf{Câu 4.} Sử dụng bộ dữ liệu "cars" trong R, hãy:
+
+(i) Với mức ý nghĩa 10%, kiểm định xem giá trị trung bình của khoảng cách dùng - "dist"
+lớn hơn 45 không? Giải thích các kết quả thu được.
+```{r p4.1}
+data(cars)
+t.test(cars$dist, mu = 45, alternative = "greater", conf.level = 0.9)
+```
+
+\
+(ii) Với mức ý nghĩa 2%, kiểm định xem tỷ lệ số xe có tốc độ - "speed" nhỏ hơn 13 trên
+tổng số xe có lớn hơn 0.4 không? Giải thích các kết quả thu được.
+```{r p4.2}
+n <- length(cars$speed)
+prop.test(x = 13, n, p = 0.4, alternative = "greater", conf.level = 0.98)
+```
+
+\
+\textbf{Câu 5.} Người ta ghi lại sản lượng lúa mì, tính bằng tạ/ha của các mảnh ruộng đã bón lót
+50 và 100 đơn vị đạm trên một hécta.
+
+Bón 50 đơn vị: 47.2 43.1 35.7 47.0 45.7 42.6 46.7 42.3
+
+Bón 100 đơn vị: 47.9 48.9 43.5 53.1 50.8 46.1 41.1 43.0 41.0 48.5 47.7
+
+Với mức ý nghĩa 5% có thể kết luận rằng bón lót 100 đơn vị đạm cho năng suất cao hơn bón
+lót 50 đơn vị đạm hay không?
+```{r p5}
+bon50 <- c(47.2, 43.1, 35.7, 47.0, 45.7, 42.6, 46.7, 42.3)
+bon100 <- c(47.9, 48.9, 43.5, 53.1, 50.8, 46.1, 41.1, 43.0, 41.0, 48.5, 47.7)
+
+var_test <- var.test(
+  x = bon50,
+  y = bon100,
+  conf.level = 0.95
+)
+print(var_test)
+
+t.test(
+  x = bon50,
+  y = bon100,
+  alternative = "less",
+  var.equal = var_test$p.value > 0.05,
+  conf.level  = 0.95
+)
+```
+
+\
+\textbf{Câu 6.} Người quản lí một nhà hàng muốn so sánh số khách trung bình mà hai tiếp viên A
+và B phục vụ của nhà hàng phục vụ trong mỗi ngày. Anh ta thu được các số liệu thống kê
+sau đây:
+
+Tiếp viên A: 42 36 58 27 48 85 38 44 62
+
+Tiếp viên B: 53 48 65 41 57 49 74 49 56
+
+Với mức ý nghĩa 5%, có thể kết luận rằng lượng khách trung bình mà hai tiếp viên A và B
+phục vụ có khác nhau hay không?
+```{r p6}
+tva <- c(42, 36, 58, 27, 48, 85, 38, 44, 62)
+tvb <- c(53, 48, 65, 41, 57, 49, 74, 49, 56)
+var_test <- var.test(
+  x = tva,
+  y = tvb,
+  conf.level = 0.95
+)
+print(var_test)
+t.test(tva, tvb, var.equal = var_test$p.value >= 0.05, conf.level = 0.95)
+```
+
+\
+\textbf{Câu 7.} Sử dụng bộ dữ liệu “iris” trong R.
+
+(i) Tìm hệ số tương quan mẫu giữa Sepal.Length và Sepal.Width; Petal.Length và Petal.Width.
+```{r p7.1}
+cor_sepal <- cor(iris$Sepal.Length, iris$Sepal.Width)
+cor_sepal
+cor_petal <- cor(iris$Petal.Length, iris$Petal.Width)
+cor_petal
+```
+
+
+(ii) Kiểm định sự tương quan giữa Sepal.Length và Sepal.Width; Petal.Length và Petal.Width.
+```{r p7.2}
+cor.test(iris$Sepal.Length, iris$Sepal.Width)
+cor.test(iris$Sepal.Length, iris$Sepal.Width)
+```
+
+(iii) Viết mô hình hồi quy tuyến tính của Sepal.Width theo Petal.Width. Các hệ số trong
+mô hình hồi quy có thực sự khác 0 không? Phần dư trong mô hình có tuân theo phân
+phối chuẩn với giá trị trung bình bằng 0 không?
+```{r p7.3}
+lmfit <- lm(Sepal.Width ~ Petal.Width, data = iris)
+s <- summary(lmfit)
+
+c <- coefficients(s)
+c
+
+sapply(rownames(c), function(x) {
+  if (c[x, 4] >= 0.05) {
+    paste0("He so ", x, " bang 0")
+  } else {
+    paste0("He so ", x, " khac 0")
+  }
+})
+
+s$r.squared
+```

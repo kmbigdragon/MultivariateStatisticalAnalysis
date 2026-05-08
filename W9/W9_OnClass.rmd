@@ -1,0 +1,97 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 9: Hồi quy tuyến tính nhiều biến**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+```{r}
+# II. Lựa chọn mô hình phù hợp
+# 1. Hai mô hình lồng nhau
+mod <- lm(mpg ~ cyl, data = mtcars)
+mod1 <- lm(mpg ~ cyl + disp, data = mtcars)
+mod2 <- lm(mpg ~ cyl + disp + hp, data = mtcars)
+# P-value > 0.05 nên là việc thêm biến disp không có ý nghĩa
+anova(mod, mod1) # H1: Sự thêm biến disp có ý nghĩa
+# P-value > 0.05 nên là việc thêm biến hp không có ý nghĩa
+anova(mod1, mod2) # H1: Sự thêm biến hp có ý nghĩa
+
+# 2. So sánh chỉ số AIC và BIC của các mô hình, có thể thông qua hàm step
+# Sử dụng trực tiếp hàm AIC() và BIC() để tính ra giá trị chỉ số trực tiếp
+# AIC và BIC càng thấp là mô hình càng tốt
+# -> theo đánh giá qua AIC và BIC thì mod1 tốt nhất
+AIC(mod)
+AIC(mod1)
+AIC(mod2)
+
+BIC(mod)
+BIC(mod1)
+BIC(mod2)
+
+# Sử dụng hàm step để tìm ra mô hình phù hợp nhất
+# theo tiêu chuẩn trong các mô hình 1 biến, 2 biến,..., m biến
+# Hàm step(): Giá trị mặc định của k = 2, ứng với chỉ số AIC ban đâu
+# Nếu thay k = log(n) ta sẽ thu được chỉ số BIC
+lm(mpg ~ 1, data = mtcars)
+lm(mpg ~ cyl, data = mtcars)
+lm(mpg ~ cyl + disp, data = mtcars)
+lm(mpg ~ ., data = mtcars) # Theo tất cả các biến
+lm(mpg ~ . - cyl, data = mtcars) # Theo tất cả các biến trừ biến cyl
+
+# Tìm mô hình HQTT phù hợp nhất dựa vào tiêu chuẩn ATC
+# Hướng: forward, backward, both
+# a. Forward: Xuất phát từ mô hình đầu tiên (mô hình đơn giản nhất),
+# Ví dụ: Xét Y = a0 + e (Mô hình 0)
+# -> Thu được một giá trị AIC
+# -> Thêm 1 trong 10 biến vào (Mô hình 0): Y = a0 + a*X_i + e (i = 1, 2,..., 10)
+# -> Thu được 10 mô hình đơn biến dạng Y = a0 + a1*X_i + e
+# -> Chọn mô hình có tiêu chuẩn AIC nhỏ nhất
+# -> Thêm 1 trong 9 biến còn lại vào mô hình đó
+# -> Tiếp tục cho đến khi thu được mô hình Y = a0 + a1*X_1 + ... + am*X_m + e
+# Khi thêm bất kì một biến nào vào mô hình trên mà giá trị AIC thu được
+# đều lớn hơn giá trị AIC của mô hình đó thì dừng lại.
+# Chọn mô hình đó là mô hình cuối cùng.
+
+# Backward, Both: Tương tự
+# Cách gọi hàm: step(object, scope, scale, direction)
+# direction: ("forward", "backward", "both")
+all <- lm(mpg ~ ., data = mtcars)
+two <- lm(mpg ~ cyl + disp, data = mtcars)
+fw <- step(two, formula(all), direction = "forward")
+fw$anova
+summary(fw)
+only <- lm(mpg ~ cyl, data = mtcars)
+
+five <- lm(mpg ~ cyl + disp + hp + drat + wt, data = mtcars)
+bw <- step(five, direction = "backward")
+bw$anova
+summary(bw)
+
+bw <- step(all, direction = "backward")
+bw$anova
+summary(fw)
+
+both <- step(only, formula(all), direction = "both")
+both$anova
+summary(both)
+
+both <- step(five, direction = "both")
+both$anova
+summary(both)
+
+both <- step(all, direction = "both")
+both$anova
+summary(both)
+```

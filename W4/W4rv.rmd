@@ -1,0 +1,87 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 4: Vector ngẫu nhiên - Mẫu ngẫu nhiên nhiều chiều**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+---
+
+\textbf{Câu 1. } Sinh 500 quan sát từ phân bố chuẩn nhiều chiều với:
+
+(i) Vector kỳ vọng $\mu = (3, 5)^T$
+
+(ii) Ma trận hiệp phương sai $\sum = \begin{pmatrix}
+2 & 0.5\\
+0.5 & 1
+\end{pmatrix}$
+
+Mô phỏng dữ liệu vừa sinh bằng biểu đồ tán xạ (scatterplot) và biểu đồ tần số / tần suất (histogram)
+với gói lệnh \textbf{ggplot2}. Sau đó tính toán và giải thích hiệp phương sai và tương quan.
+
+```{r p1}
+library(MASS)
+n <- 500
+mu <- c(3, 5)
+sigma <- matrix(c(2, 0.5, 0.5, 1), nrow = 2, ncol = 2)
+data <- mvrnorm(n, mu, Sigma = sigma)
+head(data)
+cov(data)
+cor(data)
+```
+
+\textbf{Câu 2. } Sử dụng câu lệnh \textit{set.seed(100)} và sinh mẫu ngẫu nhiên
+gồm 100 quan sát tuân theo phân phối chuẩn 3 chiều với giá trị trung bình $(0, 0, 1)^T$
+và ma trận hiệp phương sai
+\[\begin{pmatrix}
+1 & .8 & .6 \\
+.8 & 1 & .8 \\
+.6 & .8 & 1
+\end{pmatrix}\]
+
+(1) Đặt tên các biến lần lượt là A, B, C. Thêm một biến D vào mẫu trên, D gồm 100
+quan sát được sinh ngẫu nhiên biết nó tuân theo phân phối chuẩn với hai tham số 0.5 và 0.5.
+
+(2) Tính giá trị trung bình mẫu, ma trận tương quan mẫu và ma trận hiệp phương sai
+mẫu.
+
+(3) Vẽ biểu đồ phân tán của các biến và biểu đồ nhiệt của ma trận tương quan mẫu.
+```{r p2}
+set.seed(100)
+n <- 100
+mu <- c(0, 0, 1)
+sigma <- matrix(c(1, .8, .6, .8, 1, .8, .6, .8, 1), nrow = 3, ncol = 3)
+data <- mvrnorm(n, mu, Sigma = sigma)
+
+data <- as.data.frame(data)
+colnames(data) <- c("A", "B", "C")
+
+data$D <- rnorm(n = n, mean = 0.5, sd = sqrt(0.5))
+head(data)
+
+colMeans(data)
+cov(data)
+cor(data)
+
+pairs(data, main = "Bieu do phan tan A, B, C, D", pch = 18, col = "blue", panel = panel.smooth)
+heatmap(
+  cor(data),
+  Rowv = NA,
+  Colv = NA,
+  col = colorRampPalette(c("blue", "white", "red"))(100),
+  scale = "none",
+  margins = c(5, 5)
+)
+```

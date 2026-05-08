@@ -1,0 +1,124 @@
+---
+title: "**PHÂN TÍCH THỐNG KÊ NHIỀU CHIỀU (MAT3452)**"
+author: "**Bài tập tuần 12: Bài toán phân biệt**"
+date: "Trần Đăng Quang Minh - MSV: 23000141"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+    number_sections: true
+  html_document:
+    df_print: paged
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.5cm}
+  - \pretitle{\begin{center}\Large\bfseries}
+  - \posttitle{\end{center}}
+geometry: top=2cm, bottom=2cm, left=2cm, right=2cm
+---
+
+\textbf{Câu 1.} Hệ kháng nguyên bạch cầu người (HLA) là một nhóm gen trên nhiễm sắc thể số có
+liên quan đến hệ miễn dịch. Bộ dữ liệu hla trong package \textbf{gap} chứa dữ liệu \textbf{HLA} trên 6 dấu
+hiệu cho 177 bệnh nhân tâm thần phân liệt và 94 người đối chứng khỏe mạnh tương ứng.
+Làm thế nào để chúng ta có thể sử dụng 6 dấu hiệu này để phân biệt giữa bệnh nhân và đối
+chứng của họ?
+
+```{r p1}
+library(MASS)
+library(gap)
+
+head(hla)
+
+ld_hla <- lda(y ~ . - id, data = hla)
+
+ld_hla
+pred <- predict(ld_hla)
+pred_class <- pred$class
+
+print("Confusion Matrix:")
+table(Predicted = pred_class, Actual = hla$y)
+print(paste0("Accuracy: ", mean(pred_class == hla$y) * 100, "%")) 
+```
+
+\textbf{Câu 2.} Tập dữ liệu \textbf{iris} có 4 biến đo lường trên 3 loài hoa Iris khác nhau, với tổng cộng 150
+mẫu. Hãy mô tả hệ số tải (factor loadings) từ phân tích phân biệt và đối chiếu chúng với
+những gì quan sát được trong biểu đồ tọa độ song song của dữ liệu.
+
+```{r p2}
+library(MASS)
+library(datasets)
+
+head(iris)
+
+ld_iris <- lda(Species ~ ., data = iris)
+ld_iris
+
+pred_iris <- predict(ld_iris)
+
+print("Confusion Matrix:")
+table(Predicted = pred_iris$class, Actual = iris$Species)
+print(paste0("Accuracy: ", mean(pred_iris$class == iris$Species) * 100, "%")) 
+
+loading_iris <- predict(ld_iris)$x
+plot(loading_iris, col = c(2, 4, 6)[as.integer(iris$Species)],
+     pch = 16, xlab = "LD1", ylab = "LD2",
+     main = "LD1 vs LD2")
+for (i in 1:3) {
+  centx <- mean(loading_iris[iris$Species == levels(iris$Species)[i], 1])
+  centy <- mean(loading_iris[iris$Species == levels(iris$Species)[i], 2])
+  text(centx, centy, i, cex = 2)
+}
+legend("topright", legend = levels(iris$Species),
+       col = c(2, 4, 6), pch = 16, cex = 0.7)
+
+par(mar = c(4, 4, 3, 6), xpd = TRUE)
+parcoord(iris[, 1:4], col = c(2, 4, 6)[as.integer(iris$Species)],
+         var.label = TRUE, main = "Parallel Coordinate")
+legend("right", inset = c(-0.15, 0), legend = levels(iris$Species),
+       col = c(2, 4, 6), lty = 1, cex = 0.7)
+```
+
+\textbf{Câu 3.} Bộ dữ liệu \textbf{promotergene} trong package \textbf{kernlab} bao gồm 106 chuỗi gen, được
+phân loại là promoter hoặc non-promoter. Các biến giải thích là danh sách các giá trị base
+DNA đứng trước gen quan tâm. Các giá trị base nhận các giá trị a, c, g hoặc t, tương ứng
+với adenine, cytosine, guanine hoặc thymine. Sử dụng các giá trị base để tìm ra một quy tắc
+phân biệt giữa promoter và non-promoter.
+
+```{r p3}
+library(MASS)
+library(kernlab)
+
+data(promotergene)
+head(promotergene)
+
+ld_promo <- lda(Class ~ ., data = promotergene)
+ld_promo
+
+pred_promo <- predict(ld_promo)
+print("Confusion Matrix:")
+table(Predicted = pred_promo$class, Actual = promotergene$Class)
+print(paste0("Accuracy: ", mean(pred_promo$class == promotergene$Class) * 100, "%")) 
+```
+
+\
+\textbf{Câu 4.} Bộ dữ liệu \textbf{spam} trong package \textbf{kernlab} được thu thập nhằm mục đích phân biệt
+email quảng cáo (spam) và non-spam. Có 4601 email được thu thập bởi Hewlett912 Packard
+và trong số đó, 1813 email được phân loại là spam và 2788 email là non-spam. Có 57 biến
+giải thích đo tần suất của các từ khác nhau như "free" hoặc "credit". Các biến giải thích
+khác đếm tần suất của các ký hiệu dấu câu khác nhau hoặc độ dài của chuỗi toàn chữ in
+hoa. Hãy tìm một quy tắc tốt để phân biệt spam với non-spam.
+
+```{r p4}
+library(MASS)
+library(kernlab)
+
+data(spam)
+head(spam)
+
+ld_spam <- lda(type ~ ., data = spam)
+ld_spam
+
+pred_spam <- predict(ld_spam)
+table(Predicted = pred_spam$class, Actual = spam$type)
+print(paste0("Accuracy: ", mean(pred_spam$class == spam$type) * 100, "%")) 
+```
